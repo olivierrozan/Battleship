@@ -1,3 +1,4 @@
+////////// Globals variables //////////
 let boats = [
 	[2,2,0,0,0,0,0,0,0,0],
 	[0,3,0,0,0,0,0,0,0,0],
@@ -35,7 +36,14 @@ let gameRules = {
 $(document).ready(function() {
 	// initTable("player-board");
 	initTable("ia-board");
+	play();
+});
 
+/**
+ * play When you click on a cell
+ * @author orozan
+ */
+function play() {
 	$('#ia-board td').on("click", function() {
 		if ($(this).attr("data-yet") === "0") {
 			let position = $(this).attr("id").split("-");
@@ -66,8 +74,13 @@ $(document).ready(function() {
 			console.log("Yet clicked");
 		}
 	});	
-});
+}
 
+/**
+ * initTables Creates a table element
+ * @author orozan
+ * @args target string The table id
+ */
 function initTable(target) {
 	let table = $('#wrapper div #' + target);
 
