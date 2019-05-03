@@ -1,0 +1,50 @@
+body {
+	background-color: #eee;
+}
+
+#wrapper {
+	margin: 50px auto;
+	width: 960px;
+}
+
+table {
+	border-collapse: collapse;
+	margin: 5px;
+	float: left;
+}
+
+td {
+	border: 2px solid #ccc;
+	padding: 20px;
+}
+
+td:hover {
+	cursor: pointer;
+	/*border-color: #6495ed;*/
+	background-color: #ddd;
+}
+
+.missed, .missed:hover {
+	background-color: #6495ed;
+}
+
+.hit, .hit:hover {
+	background-color: #ff0000;
+}
+
+.sunk, .sunk:hover {
+	background-color: #000;
+}
+
+.clearfix {
+	clear: both;
+}
+
+.boat5 {
+	background-color: green;
+    width: 210px;
+    height: 42px;
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
