@@ -1,5 +1,18 @@
 ////////// Globals variables //////////
-let boats = [
+let IABoats = [
+	[2,2,0,0,0,0,0,0,0,0],
+	[0,3,0,0,0,0,0,0,0,0],
+	[0,3,0,0,0,0,0,4,0,0],
+	[0,3,0,0,0,0,0,4,0,0],
+	[0,0,0,0,0,0,0,4,0,0],
+	[0,0,0,0,0,0,0,4,0,0],
+	[0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,5,5,5,5,5,0,0],
+	[0,0,0,0,0,0,0,0,0,0]
+];
+
+let PlayerBoats = [
 	[2,2,0,0,0,0,0,0,0,0],
 	[0,3,0,0,0,0,0,0,0,0],
 	[0,3,0,0,0,0,0,4,0,0],
@@ -31,49 +44,117 @@ let gameRules = {
 		battleship: 4,
 		carrier: 5
 	},
+	playerTurn: true,
+	difficulty: 75
 }
 
-$(document).ready(function() {
-	// initTable("player-board");
+let TIMER = 1000;
+
+$(document).ready(() => {
+	initTable("player-board");
 	initTable("ia-board");
-	play();
+	playerTurn();
 });
 
 /**
  * play When you click on a cell
  * @author orozan
  */
-function play() {
+function playerTurn() {
 	$('#ia-board td').on("click", function() {
-		if ($(this).attr("data-yet") === "0") {
-			let position = $(this).attr("id").split("-");
+		if (gameRules.playerTurn) {
+			if ($(this).attr("data-yet") === "0") {
+				let position = $(this).attr("id").split("-");
 
-			for (let el in gameRules.boatsSize) {
-				console.log(el, gameRules.boatsSize[el]);
+				for (let el in gameRules.boatsSize) {
+					// console.log(el, gameRules.boatsSize[el]);
 
-				if (boats[position[1]][position[2]] === gameRules.boatsSize[el]) {
-					console.log(boats[position[1]][position[2]] + ": " + el + " Hit");
-					gameRules.player[el]++;
-					$(this).addClass(el + ' hit');
+					// Hit: can play another time
+					if (IABoats[position[1]][position[2]] === gameRules.boatsSize[el]) {
+						console.log(IABoats[position[1]][position[2]] + ": " + el + " Hit");
+						gameRules.player[el]++;
+						$(this).addClass(el + ' hit');
 
-					if (gameRules.player[el] === gameRules.boatsSize[el]) {
-						console.log(el + " sunk");
-						$('.' + el).removeClass("hit").addClass("sunk");
-					}
-				} 
-
-				if (boats[position[1]][position[2]] === 0) {
-					console.log(boats[position[1]][position[2]] + ": Missed");
-					$(this).addClass('missed');
+						if (gameRules.player[el] === gameRules.boatsSize[el]) {
+							console.log(el + " sunk");
+							$('.' + el).removeClass("hit").addClass("sunk");
+						}
+					} 
 				}
-			}
 
-			$(this).attr("data-yet", "1");
-			console.log(gameRules.player);
-		} else {
-			console.log("Yet clicked");
+				// Missed: ia turn
+				if (IABoats[position[1]][position[2]] === 0) {
+					console.log(IABoats[position[1]][position[2]] + ": Missed");
+					$(this).addClass('missed');
+					gameRules.playerTurn = false;
+					setTimeout(IATurn, TIMER);
+				}
+
+				$(this).attr("data-yet", "1");
+				// console.log(gameRules.player);
+			} else {
+				console.log("Yet clicked");
+			}
 		}
 	});	
+}
+
+function ChoosePlayerCell() {
+	let x = Math.floor(Math.random() * 10);
+	let y = Math.floor(Math.random() * 10);
+	let target = $('#cell-' + x + '-' + y);
+
+	// $('#cell-' + x + '-' + y).css('background-color', "#000");
+
+	if (target.attr("data-yet") === "0") {
+		for (let el in gameRules.boatsSize) {
+			// Hit: can play another time
+			if (PlayerBoats[x][y] === gameRules.boatsSize[el]) {
+				console.log(PlayerBoats[x][y] + ": " + el + " Hit");
+				gameRules.ia[el]++;
+				target.addClass(el + ' hit');
+
+				if (gameRules.ia[el] === gameRules.boatsSize[el]) {
+					console.log(el + " sunk");
+					$('.' + el).removeClass("hit").addClass("sunk");
+				}
+
+				setTimeout(IATurn, TIMER);
+			} 
+		}
+
+		// Missed: ia turn
+		if (PlayerBoats[x][y] === 0) {
+			ChoosePlayerCell();
+		}
+
+		target.attr("data-yet", "1");
+	} else {
+		console.log("Yet clicked");
+		ChoosePlayerCell();
+	}
+}
+
+/**
+ * play When IA chooses a cell
+ * @author orozan
+ */
+function IATurn() {
+	if (!gameRules.playerTurn) {
+		console.log("**IA**", gameRules.playerTurn);
+		let turn = Math.floor(Math.random() * 100) + 1;
+
+		if (turn <= gameRules.difficulty) {
+			// console.log(turn, "Hit");
+			ChoosePlayerCell();
+			
+		} else {
+			// console.log(turn, "Missed");
+			target.addClass('missed');
+			gameRules.playerTurn = true;
+			console.log("**PLAYER**", gameRules.playerTurn);
+		}
+	}
 }
 
 /**
