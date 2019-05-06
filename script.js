@@ -1,5 +1,5 @@
 ////////// Globals variables //////////
-let IABoats = [
+let CPUBoats = [
 	[2,2,0,0,0,0,0,0,0,0],
 	[0,3,0,0,0,0,0,0,0,0],
 	[0,3,0,0,0,0,0,4,0,0],
@@ -32,7 +32,7 @@ let gameRules = {
 		battleship: 0,
 		carrier: 0
 	},
-	ia: {
+	cpu: {
 		destroyer: 0,
 		cruiser: 0,
 		battleship: 0,
@@ -52,7 +52,7 @@ let TIMER = 1000;
 
 $(document).ready(() => {
 	initTable("player-board");
-	initTable("ia-board");
+	initTable("cpu-board");
 	playerTurn();
 });
 
@@ -61,7 +61,7 @@ $(document).ready(() => {
  * @author orozan
  */
 function playerTurn() {
-	$('#ia-board td').on("click", function() {
+	$('#cpu-board td').on("click", function() {
 		if (gameRules.playerTurn) {
 			if ($(this).attr("data-yet") === "0") {
 				let position = $(this).attr("id").split("-");
@@ -69,25 +69,25 @@ function playerTurn() {
 				for (let el in gameRules.boatsSize) {
 					// console.log(el, gameRules.boatsSize[el]);
 
-					// Hit: can play another time
-					if (IABoats[position[1]][position[2]] === gameRules.boatsSize[el]) {
-						console.log(IABoats[position[1]][position[2]] + ": " + el + " Hit");
+					// Hit: can play once again
+					if (CPUBoats[position[1]][position[2]] === gameRules.boatsSize[el]) {
+						console.log(CPUBoats[position[1]][position[2]] + ": " + el + " Hit");
 						gameRules.player[el]++;
 						$(this).addClass(el + ' hit');
 
 						if (gameRules.player[el] === gameRules.boatsSize[el]) {
 							console.log(el + " sunk");
-							$('.' + el).removeClass("hit").addClass("sunk");
+							$('#cpu-board').find('.' + el).removeClass("hit").addClass("sunk");
 						}
 					} 
 				}
 
-				// Missed: ia turn
-				if (IABoats[position[1]][position[2]] === 0) {
-					console.log(IABoats[position[1]][position[2]] + ": Missed");
+				// Missed: cpu turn
+				if (CPUBoats[position[1]][position[2]] === 0) {
+					console.log(CPUBoats[position[1]][position[2]] + ": Missed");
 					$(this).addClass('missed');
 					gameRules.playerTurn = false;
-					setTimeout(IATurn, TIMER);
+					setTimeout(CPUTurn, TIMER);
 				}
 
 				$(this).attr("data-yet", "1");
@@ -99,61 +99,110 @@ function playerTurn() {
 	});	
 }
 
-function ChoosePlayerCell() {
+/**
+ * CPUHitsABoat CPU chooses a Player's boat cell
+ * @author orozan
+ */
+function CPUHitsABoat() {
+	console.log("cpu Hit");
 	let x = Math.floor(Math.random() * 10);
 	let y = Math.floor(Math.random() * 10);
-	let target = $('#cell-' + x + '-' + y);
-
-	// $('#cell-' + x + '-' + y).css('background-color', "#000");
+	let target = $('#player-board #cell-' + x + '-' + y);
 
 	if (target.attr("data-yet") === "0") {
 		for (let el in gameRules.boatsSize) {
 			// Hit: can play another time
 			if (PlayerBoats[x][y] === gameRules.boatsSize[el]) {
 				console.log(PlayerBoats[x][y] + ": " + el + " Hit");
-				gameRules.ia[el]++;
+				gameRules.cpu[el]++;
 				target.addClass(el + ' hit');
 
-				if (gameRules.ia[el] === gameRules.boatsSize[el]) {
+				if (gameRules.cpu[el] === gameRules.boatsSize[el]) {
 					console.log(el + " sunk");
-					$('.' + el).removeClass("hit").addClass("sunk");
+					$('#player-board').find('.' + el).removeClass("hit").addClass("sunk");
 				}
 
-				setTimeout(IATurn, TIMER);
+				target.attr("data-yet", "1");
+				gameOver(() => setTimeout(CPUTurn, TIMER));
 			} 
 		}
 
-		// Missed: ia turn
+		// Missed: cpu turn
 		if (PlayerBoats[x][y] === 0) {
-			ChoosePlayerCell();
+			CPUHitsABoat();
 		}
 
-		target.attr("data-yet", "1");
 	} else {
 		console.log("Yet clicked");
-		ChoosePlayerCell();
+		gameOver(() => CPUHitsABoat());
 	}
 }
 
 /**
- * play When IA chooses a cell
+ * CPUMissesABoat CPU chooses a Player's empty cell
  * @author orozan
  */
-function IATurn() {
+function CPUMissesABoat() {
+	console.log("cpu Missed");
+	let x = Math.floor(Math.random() * 10);
+	let y = Math.floor(Math.random() * 10);
+	let target = $('#player-board #cell-' + x + '-' + y);
+
+	if (target.attr("data-yet") === "0") {
+		for (let el in gameRules.boatsSize) {
+			// Hit: can play another time
+			if (PlayerBoats[x][y] === gameRules.boatsSize[el]) {
+				CPUMissesABoat();
+			} 
+		}
+
+		// Missed: cpu turn
+		if (PlayerBoats[x][y] === 0) {
+			target.addClass('missed');
+			target.attr("data-yet", "1");
+		}
+
+	} else {
+		console.log("Yet clicked");
+		CPUMissesABoat();
+	}
+
+	gameRules.playerTurn = true;
+	console.log("**PLAYER**", gameRules.playerTurn);
+}
+
+/**
+ * play When CPU chooses a cell
+ * @author orozan
+ */
+function CPUTurn() {
 	if (!gameRules.playerTurn) {
-		console.log("**IA**", gameRules.playerTurn);
+		console.log("**CPU**", gameRules.playerTurn);
 		let turn = Math.floor(Math.random() * 100) + 1;
+		console.log(turn, gameRules.difficulty);
 
 		if (turn <= gameRules.difficulty) {
-			// console.log(turn, "Hit");
-			ChoosePlayerCell();
-			
+			CPUHitsABoat();
 		} else {
-			// console.log(turn, "Missed");
-			target.addClass('missed');
-			gameRules.playerTurn = true;
-			console.log("**PLAYER**", gameRules.playerTurn);
+			CPUMissesABoat();
 		}
+	}
+}
+
+/**
+ * gameOver Every boats of a player are sunk
+ * @author orozan
+ * @params fail callback when all boats are not sunk
+ */
+function gameOver(fail) {
+	if (
+		gameRules.cpu['destroyer'] === 2 && 
+		gameRules.cpu['cruiser'] === 3 && 
+		gameRules.cpu['battleship'] === 4 && 
+		gameRules.cpu['carrier'] === 5) {
+		console.log("GAME OVER");
+	} else {
+		fail();
 	}
 }
 
