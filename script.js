@@ -44,13 +44,16 @@ let gameRules = {
 		battleship: 4,
 		carrier: 5
 	},
-	playerTurn: true,
-	difficulty: 75
+	playerTurn: "PLAYER",
+	difficulty: 50
 }
 
 let TIMER = 1000;
 
 $(document).ready(() => {
+	gameRules.difficulty = +prompt("Select difficulty");
+	console.log(gameRules.difficulty);
+
 	initTable("player-board");
 	initTable("cpu-board");
 	playerTurn();
@@ -62,7 +65,7 @@ $(document).ready(() => {
  */
 function playerTurn() {
 	$('#cpu-board td').on("click", function() {
-		if (gameRules.playerTurn) {
+		if (gameRules.playerTurn === "PLAYER") {
 			if ($(this).attr("data-yet") === "0") {
 				let position = $(this).attr("id").split("-");
 
@@ -86,11 +89,12 @@ function playerTurn() {
 				if (CPUBoats[position[1]][position[2]] === 0) {
 					console.log(CPUBoats[position[1]][position[2]] + ": Missed");
 					$(this).addClass('missed');
-					gameRules.playerTurn = false;
-					setTimeout(CPUTurn, TIMER);
+					gameRules.playerTurn = "CPU";
+					// setTimeout(CPUTurn, TIMER);
 				}
 
 				$(this).attr("data-yet", "1");
+				gameOver(gameRules.player, () => setTimeout(CPUTurn, TIMER));
 				// console.log(gameRules.player);
 			} else {
 				console.log("Yet clicked");
@@ -123,7 +127,7 @@ function CPUHitsABoat() {
 				}
 
 				target.attr("data-yet", "1");
-				gameOver(() => setTimeout(CPUTurn, TIMER));
+				gameOver(gameRules.cpu, () => setTimeout(CPUTurn, TIMER));
 			} 
 		}
 
@@ -134,7 +138,7 @@ function CPUHitsABoat() {
 
 	} else {
 		console.log("Yet clicked");
-		gameOver(() => CPUHitsABoat());
+		gameOver(gameRules.cpu, () => CPUHitsABoat());
 	}
 }
 
@@ -167,7 +171,7 @@ function CPUMissesABoat() {
 		CPUMissesABoat();
 	}
 
-	gameRules.playerTurn = true;
+	gameRules.playerTurn = "PLAYER";
 	console.log("**PLAYER**", gameRules.playerTurn);
 }
 
@@ -176,7 +180,7 @@ function CPUMissesABoat() {
  * @author orozan
  */
 function CPUTurn() {
-	if (!gameRules.playerTurn) {
+	if (gameRules.playerTurn === "CPU") {
 		console.log("**CPU**", gameRules.playerTurn);
 		let turn = Math.floor(Math.random() * 100) + 1;
 		console.log(turn, gameRules.difficulty);
@@ -194,12 +198,14 @@ function CPUTurn() {
  * @author orozan
  * @params fail callback when all boats are not sunk
  */
-function gameOver(fail) {
+function gameOver(check, fail) {
+	console.log("CHECKING", check);
 	if (
-		gameRules.cpu['destroyer'] === 2 && 
-		gameRules.cpu['cruiser'] === 3 && 
-		gameRules.cpu['battleship'] === 4 && 
-		gameRules.cpu['carrier'] === 5) {
+		check['destroyer'] === 2 && 
+		check['cruiser'] === 3 && 
+		check['battleship'] === 4 && 
+		check['carrier'] === 5) {
+		gameRules.playerTurn = "END";
 		console.log("GAME OVER");
 	} else {
 		fail();

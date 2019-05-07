@@ -48,3 +48,8 @@ td:hover {
     top: 0px;
     left: 0px;
 }
+
+h2 {
+	font-size: 2em;
+	text-align: center;
+}
