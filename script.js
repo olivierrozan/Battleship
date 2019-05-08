@@ -52,50 +52,65 @@ let TIMER = 1000;
 
 $(document).ready(() => {
 	gameRules.difficulty = +prompt("Select difficulty");
-	console.log(gameRules.difficulty);
-
 	initTable("player-board");
 	initTable("cpu-board");
 	playerTurn();
 });
 
 /**
+ * log Displays message
+ * @author orozan
+ * @params player string Player / CPU
+ * @params x string x position
+ * @params y string y position
+ * @params boat string The hit boat
+ * @params state string hit / sunk / missed
+ */
+function log(player, x, y, boat, state) {
+	x = +x;
+	let playerElement = "<span class=" + player + ">" + player + "</span>";
+	let position = "<span>" + String.fromCharCode(65 + x) + "-" + y + "</span>";
+	let boatElement = boat === "" ? "" : "<span>" + boat + "</span>";
+	let stateElement = "<span>" + state + "</span>";
+	$('#messages').prepend("<div>" + playerElement + position + boatElement + stateElement + "</div>");
+}
+
+/**
  * play When you click on a cell
  * @author orozan
  */
 function playerTurn() {
+
 	$('#cpu-board td').on("click", function() {
 		if (gameRules.playerTurn === "PLAYER") {
 			if ($(this).attr("data-yet") === "0") {
 				let position = $(this).attr("id").split("-");
 
 				for (let el in gameRules.boatsSize) {
-					// console.log(el, gameRules.boatsSize[el]);
-
 					// Hit: can play once again
 					if (CPUBoats[position[1]][position[2]] === gameRules.boatsSize[el]) {
-						console.log(CPUBoats[position[1]][position[2]] + ": " + el + " Hit");
 						gameRules.player[el]++;
 						$(this).addClass(el + ' hit');
+						log("Player", position[1], position[2], el, "hit");
 
 						if (gameRules.player[el] === gameRules.boatsSize[el]) {
-							console.log(el + " sunk");
 							$('#cpu-board').find('.' + el).removeClass("hit").addClass("sunk");
+							log("Player", position[1], position[2], el, "sunk");
 						}
 					} 
 				}
 
 				// Missed: cpu turn
 				if (CPUBoats[position[1]][position[2]] === 0) {
-					console.log(CPUBoats[position[1]][position[2]] + ": Missed");
 					$(this).addClass('missed');
+					log("Player", position[1], position[2], "", "missed");
 					gameRules.playerTurn = "CPU";
-					// setTimeout(CPUTurn, TIMER);
+					$('#player-wrapper').css("opacity", "1");
+					$('#cpu-wrapper').css("opacity", "0.3");
 				}
 
 				$(this).attr("data-yet", "1");
 				gameOver(gameRules.player, () => setTimeout(CPUTurn, TIMER));
-				// console.log(gameRules.player);
 			} else {
 				console.log("Yet clicked");
 			}
@@ -108,7 +123,6 @@ function playerTurn() {
  * @author orozan
  */
 function CPUHitsABoat() {
-	console.log("cpu Hit");
 	let x = Math.floor(Math.random() * 10);
 	let y = Math.floor(Math.random() * 10);
 	let target = $('#player-board #cell-' + x + '-' + y);
@@ -117,13 +131,13 @@ function CPUHitsABoat() {
 		for (let el in gameRules.boatsSize) {
 			// Hit: can play another time
 			if (PlayerBoats[x][y] === gameRules.boatsSize[el]) {
-				console.log(PlayerBoats[x][y] + ": " + el + " Hit");
 				gameRules.cpu[el]++;
 				target.addClass(el + ' hit');
+				log("CPU", x, y, el, "hit");
 
 				if (gameRules.cpu[el] === gameRules.boatsSize[el]) {
-					console.log(el + " sunk");
 					$('#player-board').find('.' + el).removeClass("hit").addClass("sunk");
+					log("CPU", x, y, el, "sunk");
 				}
 
 				target.attr("data-yet", "1");
@@ -147,7 +161,6 @@ function CPUHitsABoat() {
  * @author orozan
  */
 function CPUMissesABoat() {
-	console.log("cpu Missed");
 	let x = Math.floor(Math.random() * 10);
 	let y = Math.floor(Math.random() * 10);
 	let target = $('#player-board #cell-' + x + '-' + y);
@@ -163,6 +176,7 @@ function CPUMissesABoat() {
 		// Missed: cpu turn
 		if (PlayerBoats[x][y] === 0) {
 			target.addClass('missed');
+			log("CPU", x, y, "", "missed");
 			target.attr("data-yet", "1");
 		}
 
@@ -172,7 +186,9 @@ function CPUMissesABoat() {
 	}
 
 	gameRules.playerTurn = "PLAYER";
-	console.log("**PLAYER**", gameRules.playerTurn);
+	console.log("**PLAYER**");
+	$('#player-wrapper').css("opacity", "0.3");
+	$('#cpu-wrapper').css("opacity", "1");
 }
 
 /**
@@ -181,9 +197,9 @@ function CPUMissesABoat() {
  */
 function CPUTurn() {
 	if (gameRules.playerTurn === "CPU") {
-		console.log("**CPU**", gameRules.playerTurn);
+		console.log("**CPU**");
 		let turn = Math.floor(Math.random() * 100) + 1;
-		console.log(turn, gameRules.difficulty);
+		// console.log(turn, gameRules.difficulty);
 
 		if (turn <= gameRules.difficulty) {
 			CPUHitsABoat();
@@ -199,12 +215,13 @@ function CPUTurn() {
  * @params fail callback when all boats are not sunk
  */
 function gameOver(check, fail) {
-	console.log("CHECKING", check);
 	if (
 		check['destroyer'] === 2 && 
 		check['cruiser'] === 3 && 
 		check['battleship'] === 4 && 
 		check['carrier'] === 5) {
+		
+		$("#messages").prepend("<div>**" + gameRules.playerTurn + " Wins**</div>");
 		gameRules.playerTurn = "END";
 		console.log("GAME OVER");
 	} else {
@@ -230,4 +247,7 @@ function initTable(target) {
 
 		table.append("</tr>");
 	}
+
+	$('#player-wrapper').css("opacity", "0.3");
+	$('#cpu-wrapper').css("opacity", "1");
 }

@@ -10,7 +10,19 @@ body {
 table {
 	border-collapse: collapse;
 	margin: 5px;
+}
+
+td {
+	border: 2px solid #ccc;
+	padding: 20px;
+}
+
+#player-wrapper {
 	float: left;
+}
+
+#cpu-wrapper {
+	float: right;
 }
 
 td {
@@ -20,16 +32,15 @@ td {
 
 td:hover {
 	cursor: pointer;
-	/*border-color: #6495ed;*/
 	background-color: #ddd;
 }
 
 .missed, .missed:hover {
-	background-color: #6495ed;
+	background-color: #007bff;
 }
 
 .hit, .hit:hover {
-	background-color: #ff0000;
+	background-color: #dc3545;
 }
 
 .sunk, .sunk:hover {
@@ -52,4 +63,29 @@ td:hover {
 h2 {
 	font-size: 2em;
 	text-align: center;
+}
+
+#messages {
+	height: 145px;
+    overflow: auto;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+#messages>div {
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+#messages .Player {
+	color: #007bff;
+}
+
+#messages .CPU {
+	color: #dc3545;
+}
+
+#messages span {
+	margin: 1px 2px;
 }
