@@ -89,3 +89,72 @@ h2 {
 #messages span {
 	margin: 1px 2px;
 }
+
+.difficulty {
+	margin: 20px auto;
+    width: 50%;
+}
+
+.difficulty input[type=radio] {
+	display: none;
+}
+
+.difficulty label {
+	padding: 10px;
+	margin: 10px 15px 0px 0px;
+	background: #fff;
+	border-radius: 3px;
+	display: inline-block;
+	color: #007bff;
+	cursor: pointer;
+	border: 2px solid #007bff;
+	font-weight: bold;
+}
+
+.skill-go {
+	padding: 10px;
+	margin: 10px 15px 0px 0px;
+	color: #fff;
+	border-radius: 3px;
+	display: inline-block;
+	background-color: #007bff;
+	cursor: pointer;
+	border: 2px solid #007bff;
+}
+
+.skill-go:disabled {
+	background-color: #ccc;
+	border-color: #ccc;
+	cursor: not-allowed;
+}
+
+.difficulty input:checked + label, .difficulty label:hover {
+	background: #007bff;
+	color: #fff;
+	border-color: #007bff;
+}
+
+.difficulty input:checked + label {
+	text-decoration: underline;
+	text-underline-position: under; 
+	font-weight: bold;
+}
+
+#skill-message {
+	font-weight: bold;
+	text-align: center;
+	font-size: 1.2em;
+	display: none;
+}
+
+.easy {
+	color: #e83e8c;
+}
+
+.medium {
+	color: #fd7e14;
+}
+
+.hard {
+	color: #dc3545;
+}

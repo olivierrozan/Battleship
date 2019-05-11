@@ -13,7 +13,23 @@
 	<body>
 		<section id="wrapper">
 			<h2>Battleship</h2>
+			<div class="difficulty">
+				<span>Select a skill:</span>
+
+				<input type="radio" id="skill-easy" name="skill" value="25" />
+				<label for="skill-easy">Easy</label>
 			
+				<input type="radio" id="skill-medium" name="skill" value="50" />
+				<label for="skill-medium">Medium</label>
+			
+				<input type="radio" id="skill-hard" name="skill" value="75" />
+				<label for="skill-hard">Hard</label>
+				
+				<button type="button" class="skill-go" disabled>Start</button>
+			</div>
+
+			<div id="skill-message"></div>
+
 			<div id="player-wrapper">
 				<!-- <div class="boat5"></div> -->
 				<h3>Player</h3>

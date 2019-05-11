@@ -25,6 +25,12 @@ let PlayerBoats = [
 	[0,0,0,0,0,0,0,0,0,0]
 ];
 
+/* playerTurn: 
+INIT
+PLAYER
+CPU
+END
+*/
 let gameRules = {
 	player: {
 		destroyer: 0,
@@ -44,17 +50,37 @@ let gameRules = {
 		battleship: 4,
 		carrier: 5
 	},
-	playerTurn: "PLAYER",
-	difficulty: 50
+	playerTurn: "INIT",
+	difficulty: 0
 }
 
 let TIMER = 1000;
 
 $(document).ready(() => {
-	gameRules.difficulty = +prompt("Select difficulty");
 	initTable("player-board");
 	initTable("cpu-board");
-	playerTurn();
+	$('#player-wrapper').css("opacity", "1");
+	$('#cpu-wrapper').css("opacity", "0.3");
+
+	$('.difficulty label').on("click", function() {
+		$('.skill-go').removeAttr("disabled");
+	});
+
+	$('.skill-go').on("click", function() {
+		let text = $('.difficulty input:checked').attr("id").split("-")[1];
+
+		$('#skill-message').text(text).addClass(text).delay(200).fadeIn();
+
+		$('.difficulty').fadeOut(200, () => {
+			$(this).remove();
+		});
+
+		gameRules.playerTurn = "PLAYER";
+		gameRules.difficulty = +$('.difficulty input:checked').val();
+		$('#player-wrapper').css("opacity", "0.3");
+		$('#cpu-wrapper').css("opacity", "1");
+		playerTurn();
+	});
 });
 
 /**
@@ -80,7 +106,6 @@ function log(player, x, y, boat, state) {
  * @author orozan
  */
 function playerTurn() {
-
 	$('#cpu-board td').on("click", function() {
 		if (gameRules.playerTurn === "PLAYER") {
 			if ($(this).attr("data-yet") === "0") {
@@ -247,7 +272,4 @@ function initTable(target) {
 
 		table.append("</tr>");
 	}
-
-	$('#player-wrapper').css("opacity", "0.3");
-	$('#cpu-wrapper').css("opacity", "1");
 }
