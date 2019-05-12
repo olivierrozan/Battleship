@@ -89,6 +89,10 @@ $(document).ready(() => {
 	});
 });
 
+/**
+ * initGame Inits / resets the game
+ * @author orozan
+ */
 function initGame() {
 	$('#player-wrapper').css("opacity", "1");
 	$('#cpu-wrapper').css("opacity", "0.3");
@@ -141,6 +145,8 @@ function playerTurn() {
 							$('#cpu-board').find('.' + el).removeClass("hit").addClass("sunk");
 							log("Player", position[1], position[2], el, "sunk");
 						}
+
+						gameOver(gameRules.player);
 					} 
 				}
 
@@ -151,10 +157,10 @@ function playerTurn() {
 					gameRules.playerTurn = "CPU";
 					$('#player-wrapper').css("opacity", "1");
 					$('#cpu-wrapper').css("opacity", "0.3");
+					setTimeout(CPUTurn, TIMER);
 				}
 
 				$(this).attr("data-yet", "1");
-				gameOver(gameRules.player, () => setTimeout(CPUTurn, TIMER));
 			} else {
 				console.log("Yet clicked");
 			}
@@ -258,7 +264,7 @@ function CPUTurn() {
  * @author orozan
  * @params fail callback when all boats are not sunk
  */
-function gameOver(check, fail) {
+function gameOver(check, fail = null) {
 	if (
 		check['destroyer'] === 2 && 
 		check['cruiser'] === 3 && 
@@ -269,7 +275,7 @@ function gameOver(check, fail) {
 		gameRules.playerTurn = "END";
 		console.log("GAME OVER");
 	} else {
-		fail();
+		if (fail !== null) fail();
 	}
 }
 
