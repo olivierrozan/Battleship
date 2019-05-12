@@ -158,3 +158,20 @@ h2 {
 .hard {
 	color: #dc3545;
 }
+
+#reset-game {
+	font-size: 0.6em;
+    border: 2px solid #dc3545;
+    border-radius: 4px;
+    padding: 5px;
+    color: #dc3545;
+    margin-left: 15px;
+    background-color: #fff;
+    display: none;
+}
+
+#reset-game:hover {
+	cursor: pointer;
+	background-color: #dc3545;
+	color: #fff;
+}

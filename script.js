@@ -31,7 +31,7 @@ PLAYER
 CPU
 END
 */
-let gameRules = {
+const gameRules_init = {
 	player: {
 		destroyer: 0,
 		cruiser: 0,
@@ -54,25 +54,27 @@ let gameRules = {
 	difficulty: 0
 }
 
+let gameRules = {};
+
 let TIMER = 1000;
 
 $(document).ready(() => {
 	initTable("player-board");
 	initTable("cpu-board");
-	$('#player-wrapper').css("opacity", "1");
-	$('#cpu-wrapper').css("opacity", "0.3");
+	initGame();
 
 	$('.difficulty label').on("click", function() {
 		$('.skill-go').removeAttr("disabled");
 	});
 
 	$('.skill-go').on("click", function() {
+		$('#reset-game').show();
 		let text = $('.difficulty input:checked').attr("id").split("-")[1];
 
 		$('#skill-message').text(text).addClass(text).delay(200).fadeIn();
 
 		$('.difficulty').fadeOut(200, () => {
-			$(this).remove();
+			$(this).hide();
 		});
 
 		gameRules.playerTurn = "PLAYER";
@@ -81,7 +83,24 @@ $(document).ready(() => {
 		$('#cpu-wrapper').css("opacity", "1");
 		playerTurn();
 	});
+
+	$('#reset-game').on("click", function() {
+		initGame();
+	});
 });
+
+function initGame() {
+	$('#player-wrapper').css("opacity", "1");
+	$('#cpu-wrapper').css("opacity", "0.3");
+	$('#reset-game').hide();
+	gameRules = JSON.parse(JSON.stringify(gameRules_init));
+	$('.difficulty').show();
+	$('.difficulty input:checked').prop("checked", false);
+	$('#messages').empty();
+	$('.skill-go').attr("disabled", "disabled").show();
+	$('#skill-message').empty().removeClass().hide();
+	$('td').removeAttr("class").attr("data-yet", "0");
+}
 
 /**
  * log Displays message
