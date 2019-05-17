@@ -1,16 +1,6 @@
-////////// Globals variables //////////
-let CPUBoats = [
-	[2,2,0,0,0,0,0,0,0,0],
-	[0,3,0,0,0,0,0,0,0,0],
-	[0,3,0,0,0,0,0,4,0,0],
-	[0,3,0,0,0,0,0,4,0,0],
-	[0,0,0,0,0,0,0,4,0,0],
-	[0,0,0,0,0,0,0,4,0,0],
-	[0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,5,5,5,5,5,0,0],
-	[0,0,0,0,0,0,0,0,0,0]
-];
+/*=====  Globals variables  ======*/
+
+let CPUBoats = [];
 
 let PlayerBoats = [
 	[2,2,0,0,0,0,0,0,0,0],
@@ -58,46 +48,76 @@ let gameRules = {};
 
 let TIMER = 1000;
 
-$(document).ready(() => {
-	initTable("player-board");
-	initTable("cpu-board");
-	initGame();
+/*=====  Functions  ======*/
 
-	$('.difficulty label').on("click", function() {
-		$('.skill-go').removeAttr("disabled");
-	});
+/**
+ * placeBoats place CPU boat
+ * @author orozan
+ * type int boat type
+ */
+function placeBoats(type) {
+	// 0: Horizontal, 1: vertical
+	let direction = Math.floor(Math.random() * 2);
+	let x = Math.floor(Math.random() * (10 - type));
+	let y = Math.floor(Math.random() * (10 - type));
+	let isOKToPlace = 0;
+	
+	for (let i = 0; i < type; i++) {
+		if (direction === 0) {
+			if (CPUBoats[x][y+i] !== 0) {
+				isOKToPlace++;
+			}
+		} else {
+			if (CPUBoats[x+i][y] !== 0) {
+				isOKToPlace++;
+			}
+		}
+	}
 
-	$('.skill-go').on("click", function() {
-		$('#reset-game').show();
-		let text = $('.difficulty input:checked').attr("id").split("-")[1];
+	if (isOKToPlace > 0) {
+		placeBoats(type);
+	} else {
+		for (let i = 0; i < type; i++) {
+			if (direction === 0) {
+				CPUBoats[x][y+i] = type;
+			} else {
+				CPUBoats[x+i][y] = type;
+			}
+		}
+	}
+}
 
-		$('#skill-message').text(text).addClass(text).delay(200).fadeIn();
+/**
+ * initCPUPosition Inits CPU fleet position
+ * @author orozan
+ */
+function initCPUPosition() {
+	CPUBoats = [];
+	for (let i = 0; i < 10; i++) {
+		CPUBoats[i] = [];
 
-		$('.difficulty').fadeOut(200, () => {
-			$(this).hide();
-		});
+		for (let j = 0; j < 10; j++) {
+			CPUBoats[i][j] = 0;
+		}
+	}
 
-		gameRules.playerTurn = "PLAYER";
-		gameRules.difficulty = +$('.difficulty input:checked').val();
-		$('#player-wrapper').css("opacity", "0.3");
-		$('#cpu-wrapper').css("opacity", "1");
-		playerTurn();
-	});
-
-	$('#reset-game').on("click", function() {
-		initGame();
-	});
-});
+	placeBoats(5);
+	placeBoats(4);
+	placeBoats(3);
+	placeBoats(2);
+	// console.log(CPUBoats);
+}
 
 /**
  * initGame Inits / resets the game
  * @author orozan
  */
 function initGame() {
+	gameRules = JSON.parse(JSON.stringify(gameRules_init));
+	CPUBoats = [];
 	$('#player-wrapper').css("opacity", "1");
 	$('#cpu-wrapper').css("opacity", "0.3");
 	$('#reset-game').hide();
-	gameRules = JSON.parse(JSON.stringify(gameRules_init));
 	$('.difficulty').show();
 	$('.difficulty input:checked').prop("checked", false);
 	$('#messages').empty();
@@ -298,3 +318,37 @@ function initTable(target) {
 		table.append("</tr>");
 	}
 }
+
+/*=====  Document init  ======*/
+
+$(document).ready(() => {
+	initTable("player-board");
+	initTable("cpu-board");
+	initGame();
+
+	$('.difficulty label').on("click", function() {
+		$('.skill-go').removeAttr("disabled");
+	});
+
+	$('.skill-go').on("click", function() {
+		initCPUPosition();
+		$('#reset-game').show();
+		let text = $('.difficulty input:checked').attr("id").split("-")[1];
+
+		$('#skill-message').text(text).addClass(text).delay(200).fadeIn();
+
+		$('.difficulty').fadeOut(200, () => {
+			$(this).hide();
+		});
+
+		gameRules.playerTurn = "PLAYER";
+		gameRules.difficulty = +$('.difficulty input:checked').val();
+		$('#player-wrapper').css("opacity", "0.3");
+		$('#cpu-wrapper').css("opacity", "1");
+		playerTurn();
+	});
+
+	$('#reset-game').on("click", function() {
+		initGame();
+	});
+});
