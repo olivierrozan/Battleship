@@ -321,6 +321,8 @@ function initTable(target) {
 		}
 
 		table.append("</tr>");
+		$('#' + target).find('#cell-' + i + '-0').append("<div class='coordX'>" + (String.fromCharCode(i + 65)) + "</div>");
+		$('#' + target).find('#cell-0-' + i).append("<div class='coordY'>" + (i + 1) + "</div>");
 	}
 }
 

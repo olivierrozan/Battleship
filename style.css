@@ -211,3 +211,26 @@ h2 {
     font-weight: bold;
     display: none;
 }
+
+.coordY {
+	position: relative;
+    top: -40px;
+    left: -6px;
+    height: 0px;
+    width: 0px;
+    font-weight: bold;
+}
+
+.coordX {
+	position: relative;
+    top: -12px;
+    left: -40px;
+    height: 0px;
+    width: 0px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.player-label {
+	margin-bottom: 25px;
+}
