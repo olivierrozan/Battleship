@@ -125,6 +125,7 @@ function initGame() {
 	$('.skill-go').attr("disabled", "disabled").show();
 	$('#skill-message').empty().removeClass().hide();
 	$('td').removeAttr("class").attr("data-yet", "0");
+	$('.fb').removeClass('f-sunk-boat');
 }
 
 /**
@@ -165,6 +166,7 @@ function playerTurn() {
 						if (gameRules.player[el] === gameRules.boatsSize[el]) {
 							$('#cpu-board').find('.' + el).removeClass("hit").addClass("sunk");
 							log("Player", position[1], position[2], el, "sunk");
+							$('#cpu-wrapper .boats-feedback').find('.f-' + el).addClass("f-sunk-boat");
 						}
 
 						gameOver(gameRules.player);
@@ -209,6 +211,7 @@ function CPUHitsABoat() {
 				if (gameRules.cpu[el] === gameRules.boatsSize[el]) {
 					$('#player-board').find('.' + el).removeClass("hit").addClass("sunk");
 					log("CPU", x, y, el, "sunk");
+					$('#player-wrapper .boats-feedback').find('.f-' + el).addClass("f-sunk-boat");
 				}
 
 				target.attr("data-yet", "1");
@@ -222,7 +225,7 @@ function CPUHitsABoat() {
 		}
 
 	} else {
-		console.log("Yet clicked");
+		// console.log("Yet clicked");
 		gameOver(gameRules.cpu, () => CPUHitsABoat());
 	}
 }

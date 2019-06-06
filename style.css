@@ -46,29 +46,29 @@ body {
 	clear: both;
 }
 
-.boat2 {
-	background-color: #000;
+.f-destroyer {
+	background-color: #007bff;
     width: 30px;
     height: 15px;
     margin: 10px 0px;
 }
 
-.boat3 {
-	background-color: #000;
+.f-cruiser {
+	background-color: #007bff;
     width: 45px;
     height: 15px;
     margin: 10px 0px;
 }
 
-.boat4 {
-	background-color: #000;
+.f-battleship {
+	background-color: #007bff;
     width: 60px;
     height: 15px;
     margin: 10px 0px;
 }
 
-.boat5 {
-	background-color: #000;
+.f-carrier {
+	background-color: #007bff;
     width: 75px;
     height: 15px;
     margin: 10px 0px;
@@ -256,4 +256,8 @@ h2 {
 
 .player-label {
 	margin-bottom: 25px;
+}
+
+.f-sunk-boat {
+	background-color: #000 !important;
 }
