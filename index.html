@@ -12,39 +12,40 @@
 	
 	<body>
 		<section id="wrapper">
-			<h2>Battleship<button id="reset-game">Reset</button></h2>
-			<div class="difficulty">
-				<span>Select a skill:</span>
+			<h2>Battleship<span id="skill-message"></span></h2>
+			<div id="message">
+				<div class="difficulty">
+					<span>Select a skill:</span>
 
-				<input type="radio" id="skill-easy" name="skill" value="25" />
-				<label for="skill-easy">Easy</label>
-			
-				<input type="radio" id="skill-medium" name="skill" value="50" />
-				<label for="skill-medium">Medium</label>
-			
-				<input type="radio" id="skill-hard" name="skill" value="75" />
-				<label for="skill-hard">Hard</label>
+					<input type="radio" id="skill-easy" name="skill" data-skill="Easy" value="25" />
+					<label for="skill-easy">Easy</label>
 				
-				<button type="button" class="skill-go" disabled>Start</button>
-			</div>
+					<input type="radio" id="skill-medium" name="skill" data-skill="Medium" value="50" />
+					<label for="skill-medium">Medium</label>
+				
+					<input type="radio" id="skill-hard" name="skill" data-skill="hard" value="75" />
+					<label for="skill-hard">Hard</label>
+					
+					<button type="button" class="skill-go" disabled>Start</button>
+				</div>
 
-			<div id="skill-message"></div>
+				
+				<div id="message-win"><span></span><button id="reset-game">Reset</button></div>
+			</div>
 
 			<div id="player-wrapper">
 				<!-- <div class="boat5"></div> -->
 				<h3>PLAYER</h3>
-				<table id="player-board">
-				</table>
+				<table id="player-board"></table>
 			</div>
 
 			<div id="cpu-wrapper">
 				<h3>CPU</h3>
-				<table id="cpu-board">
-				</table>
+				<table id="cpu-board"></table>
 			</div>
 			<div class="clearfix"></div>
 
-			<div id="messages"></div>
+			<div id="history"><table></table></div>
 		</section>
 		
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

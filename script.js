@@ -93,6 +93,7 @@ function placeBoats(type) {
  */
 function initCPUPosition() {
 	CPUBoats = [];
+	
 	for (let i = 0; i < 10; i++) {
 		CPUBoats[i] = [];
 
@@ -105,7 +106,6 @@ function initCPUPosition() {
 	placeBoats(4);
 	placeBoats(3);
 	placeBoats(2);
-	// console.log(CPUBoats);
 }
 
 /**
@@ -117,10 +117,11 @@ function initGame() {
 	CPUBoats = [];
 	$('#player-wrapper').css("opacity", "1");
 	$('#cpu-wrapper').css("opacity", "0.3");
-	$('#reset-game').hide();
+	$('#message-win').hide();
 	$('.difficulty').show();
 	$('.difficulty input:checked').prop("checked", false);
-	$('#messages').empty();
+	$('#history>table').empty();
+	$('#history div').remove();
 	$('.skill-go').attr("disabled", "disabled").show();
 	$('#skill-message').empty().removeClass().hide();
 	$('td').removeAttr("class").attr("data-yet", "0");
@@ -137,11 +138,11 @@ function initGame() {
  */
 function log(player, x, y, boat, state) {
 	x = +x;
-	let playerElement = "<span class=" + player + ">" + player + "</span>";
-	let position = "<span>" + String.fromCharCode(65 + x) + "-" + y + "</span>";
-	let boatElement = boat === "" ? "" : "<span>" + boat + "</span>";
-	let stateElement = "<span>" + state + "</span>";
-	$('#messages').prepend("<div>" + playerElement + position + boatElement + stateElement + "</div>");
+	let playerElement = "<td class=" + player + ">" + player + "</td>";
+	let position = "<td class='message-coord'>" + String.fromCharCode(65 + x) + "-" + y + "</td>";
+	let boatElement = boat === "" ? "<td class='message-boat'></td>" : "<td class='message-boat'>" + boat + "</td>";
+	let stateElement = "<td class='message-state'>" + state + "</td>";
+	$('#history>table').prepend("<tr>" + playerElement + position + boatElement + stateElement + "</tr>");
 }
 
 /**
@@ -291,8 +292,12 @@ function gameOver(check, fail = null) {
 		check['battleship'] === 4 && 
 		check['carrier'] === 5) {
 		
-		$("#messages").prepend("<div>**" + gameRules.playerTurn + " Wins**</div>");
+		$("#history").prepend("<div>**" + gameRules.playerTurn + " Wins**</div>");
+		$('#message-win').show().find("span").text(gameRules.playerTurn + " Wins");
+		// $('#message-win>span').text(gameRules.playerTurn + " Wins");
 		gameRules.playerTurn = "END";
+		$('#player-wrapper').css("opacity", "0.3");
+		$('#cpu-wrapper').css("opacity", "0.3");
 		console.log("GAME OVER");
 	} else {
 		if (fail !== null) fail();
@@ -319,6 +324,16 @@ function initTable(target) {
 	}
 }
 
+/**
+ * ucfirst Gets the first letter in uppercase
+ * @author orozan
+ * @return The first letter in uppercase
+ */
+String.prototype.ucfirst = function()
+{
+    return this.charAt(0).toUpperCase() + this.substr(1);
+}
+
 /*=====  Document init  ======*/
 
 $(document).ready(() => {
@@ -332,8 +347,7 @@ $(document).ready(() => {
 
 	$('.skill-go').on("click", function() {
 		initCPUPosition();
-		$('#reset-game').show();
-		let text = $('.difficulty input:checked').attr("id").split("-")[1];
+		let text = $('.difficulty input:checked').attr("id").split("-")[1].ucfirst();
 
 		$('#skill-message').text(text).addClass(text).delay(200).fadeIn();
 

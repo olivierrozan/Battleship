@@ -7,14 +7,14 @@ body {
 	width: 960px;
 }
 
-table {
+#player-board, #cpu-board {
 	border-collapse: collapse;
 	margin: 5px;
 }
 
-td {
+#player-board td, #cpu-board td {
 	border: 2px solid #ccc;
-	padding: 20px;
+	padding: 15px;
 }
 
 #player-wrapper {
@@ -25,14 +25,9 @@ td {
 	float: right;
 }
 
-td {
-	border: 2px solid #ccc;
-	padding: 20px;
-}
-
-td:hover {
+#player-board td:hover, #cpu-board td:hover {
 	cursor: pointer;
-	background-color: #ddd;
+	/*background-color: #ddd;*/
 }
 
 .missed, .missed:hover {
@@ -65,29 +60,57 @@ h2 {
 	text-align: center;
 }
 
-#messages {
+#history {
 	height: 145px;
     overflow: auto;
     border: 2px solid #ccc;
     border-radius: 4px;
-    padding: 5px;
+    width: 50%;
+    padding: 10px;
+    margin-top: 30px;
 }
 
-#messages>div {
+#history table {
+	width: 100%;
+}
+
+#history tr {
 	font-weight: bold;
 	font-size: 1.2em;
 }
 
-#messages .Player {
+#history td {
+	text-align: left;
+}
+
+#history .Player {
 	color: #007bff;
 }
 
-#messages .CPU {
+#history .CPU {
 	color: #dc3545;
 }
 
-#messages span {
-	margin: 1px 2px;
+#history .Player, #history .CPU {
+	width: 20%;
+}
+
+#history .message-coord {
+	width: 15%;
+}
+
+#history .message-boat {
+	width: 30%;
+}
+
+#history .message-state {
+	width: 35%;
+}
+
+#history div {
+	font-weight: bold;
+    font-size: 1.5em;
+    text-align: center;
 }
 
 .difficulty {
@@ -109,6 +132,11 @@ h2 {
 	cursor: pointer;
 	border: 2px solid #007bff;
 	font-weight: bold;
+}
+
+.difficulty>span {
+	font-size: 1.3em;
+    margin-right: 20px;
 }
 
 .skill-go {
@@ -143,19 +171,20 @@ h2 {
 #skill-message {
 	font-weight: bold;
 	text-align: center;
-	font-size: 1.2em;
+	font-size: 0.8em;
 	display: none;
+	margin-left: 20px;
 }
 
-.easy {
+.Easy {
 	color: #e83e8c;
 }
 
-.medium {
+.Medium {
 	color: #fd7e14;
 }
 
-.hard {
+.Hard {
 	color: #dc3545;
 }
 
@@ -167,11 +196,18 @@ h2 {
     color: #dc3545;
     margin-left: 15px;
     background-color: #fff;
-    display: none;
 }
 
 #reset-game:hover {
 	cursor: pointer;
 	background-color: #dc3545;
 	color: #fff;
+}
+
+#message-win {
+	text-align: center;
+    margin: 30px 0px;
+    font-size: 1.5em;
+    font-weight: bold;
+    display: none;
 }
