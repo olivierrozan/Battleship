@@ -4,7 +4,7 @@ body {
 
 #wrapper {
 	margin: 50px auto;
-	width: 960px;
+	width: 990px;
 }
 
 #player-board, #cpu-board {
@@ -19,10 +19,16 @@ body {
 
 #player-wrapper {
 	float: left;
+	border: 3px solid #007bff;
+    border-radius: 8px;
+    padding: 0px 10px 0px 30px;
 }
 
 #cpu-wrapper {
 	float: right;
+	border: 3px solid #007bff;
+    border-radius: 8px;
+    padding: 0px 10px 0px 30px;
 }
 
 #player-board td:hover, #cpu-board td:hover {
@@ -136,9 +142,26 @@ h2 {
     text-align: center;
 }
 
+#message-win {
+	text-align: center;
+    /*margin: 30px 0px;*/
+    font-size: 1.5em;
+    font-weight: bold;
+    display: none;
+    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
 .difficulty {
-	margin: 20px auto;
+	margin: 0px auto;
+	/*margin: 20px auto;*/
     width: 50%;
+    position: relative;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
 }
 
 .difficulty input[type=radio] {
@@ -227,14 +250,6 @@ h2 {
 	color: #fff;
 }
 
-#message-win {
-	text-align: center;
-    margin: 30px 0px;
-    font-size: 1.5em;
-    font-weight: bold;
-    display: none;
-}
-
 .coordY {
 	position: relative;
     top: -40px;
@@ -256,8 +271,18 @@ h2 {
 
 .player-label {
 	margin-bottom: 25px;
+	text-align: center;
 }
 
 .f-sunk-boat {
 	background-color: #000 !important;
+}
+
+.turn {
+	opacity: 0.3;
+	border-color: transparent !important;
+}
+
+#message {
+	height: 100px;
 }

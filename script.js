@@ -115,8 +115,8 @@ function initCPUPosition() {
 function initGame() {
 	gameRules = JSON.parse(JSON.stringify(gameRules_init));
 	CPUBoats = [];
-	$('#player-wrapper').css("opacity", "1");
-	$('#cpu-wrapper').css("opacity", "0.3");
+	$('#player-wrapper').removeClass("turn");
+	$('#cpu-wrapper').addClass("turn");
 	$('#message-win').hide();
 	$('.difficulty').show();
 	$('.difficulty input:checked').prop("checked", false);
@@ -178,8 +178,8 @@ function playerTurn() {
 					$(this).addClass('missed');
 					log("Player", position[1], position[2], "", "missed");
 					gameRules.playerTurn = "CPU";
-					$('#player-wrapper').css("opacity", "1");
-					$('#cpu-wrapper').css("opacity", "0.3");
+					$('#player-wrapper').removeClass("turn");
+					$('#cpu-wrapper').addClass("turn");
 					setTimeout(CPUTurn, TIMER);
 				}
 
@@ -261,8 +261,11 @@ function CPUMissesABoat() {
 
 	gameRules.playerTurn = "PLAYER";
 	console.log("**PLAYER**");
-	$('#player-wrapper').css("opacity", "0.3");
-	$('#cpu-wrapper').css("opacity", "1");
+	// $('#player-wrapper').css("opacity", "0.3");
+	// $('#cpu-wrapper').css("opacity", "1");
+
+	$('#cpu-wrapper').removeClass("turn");
+	$('#player-wrapper').addClass("turn");
 }
 
 /**
@@ -299,8 +302,8 @@ function gameOver(check, fail = null) {
 		$('#message-win').show().find("span").text(gameRules.playerTurn + " Wins");
 		// $('#message-win>span').text(gameRules.playerTurn + " Wins");
 		gameRules.playerTurn = "END";
-		$('#player-wrapper').css("opacity", "0.3");
-		$('#cpu-wrapper').css("opacity", "0.3");
+		$('#player-wrapper').addClass("turn");
+		$('#cpu-wrapper').addClass("turn");
 		console.log("GAME OVER");
 	} else {
 		if (fail !== null) fail();
@@ -362,8 +365,8 @@ $(document).ready(() => {
 
 		gameRules.playerTurn = "PLAYER";
 		gameRules.difficulty = +$('.difficulty input:checked').val();
-		$('#player-wrapper').css("opacity", "0.3");
-		$('#cpu-wrapper').css("opacity", "1");
+		$('#cpu-wrapper').removeClass("turn");
+		$('#player-wrapper').addClass("turn");
 		playerTurn();
 	});
 
