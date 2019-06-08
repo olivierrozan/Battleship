@@ -286,3 +286,7 @@ h2 {
 #message {
 	height: 100px;
 }
+
+.reveal {
+	background-color: green;
+}

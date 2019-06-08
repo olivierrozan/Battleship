@@ -225,7 +225,6 @@ function CPUHitsABoat() {
 		}
 
 	} else {
-		// console.log("Yet clicked");
 		gameOver(gameRules.cpu, () => CPUHitsABoat());
 	}
 }
@@ -261,9 +260,6 @@ function CPUMissesABoat() {
 
 	gameRules.playerTurn = "PLAYER";
 	console.log("**PLAYER**");
-	// $('#player-wrapper').css("opacity", "0.3");
-	// $('#cpu-wrapper').css("opacity", "1");
-
 	$('#cpu-wrapper').removeClass("turn");
 	$('#player-wrapper').addClass("turn");
 }
@@ -276,7 +272,6 @@ function CPUTurn() {
 	if (gameRules.playerTurn === "CPU") {
 		console.log("**CPU**");
 		let turn = Math.floor(Math.random() * 100) + 1;
-		// console.log(turn, gameRules.difficulty);
 
 		if (turn <= gameRules.difficulty) {
 			CPUHitsABoat();
@@ -300,11 +295,25 @@ function gameOver(check, fail = null) {
 		
 		$("#history").prepend("<div>**" + gameRules.playerTurn + " Wins**</div>");
 		$('#message-win').show().find("span").text(gameRules.playerTurn + " Wins");
-		// $('#message-win>span').text(gameRules.playerTurn + " Wins");
 		gameRules.playerTurn = "END";
 		$('#player-wrapper').addClass("turn");
 		$('#cpu-wrapper').addClass("turn");
 		console.log("GAME OVER");
+
+		for (let i = 0; i < 10; i++) {
+			for (let j = 0; j < 10; j++) {
+				let cpuCell = $('#cpu-board #cell-' + i + '-' + j);
+				let playerCell = $('#player-board #cell-' + i + '-' + j);
+
+				if (CPUBoats[i][j] !== 0 && !cpuCell.hasClass("hit") && !cpuCell.hasClass("sunk")) {
+					$('#cpu-board #cell-' + i + '-' + j).addClass("reveal");
+				}
+
+				if (PlayerBoats[i][j] !== 0 && !playerCell.hasClass("hit") && !playerCell.hasClass("sunk")) {
+					$('#player-board #cell-' + i + '-' + j).addClass("reveal");
+				}
+			}
+		}
 	} else {
 		if (fail !== null) fail();
 	}
