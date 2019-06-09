@@ -328,11 +328,11 @@ function initTable(target) {
 	let table = $('#wrapper div #' + target);
 
 	for (let i = 0; i < 10; i++) {
-		table.append("<tr id=row-" + i + ">");
+		table.append("<tr id='row-" + i + "'>");
 
 		for (let j = 0; j < 10; j++) {
 			let row = $("#" + target + " #row-" + i);
-			row.append("<td id=cell-" + i + "-" + j + " data-yet=0></td>");
+			row.append("<td id=cell-" + i + "-" + j + " data-yet=0><div class='cell-r'></div></td>");
 		}
 
 		table.append("</tr>");
@@ -351,12 +351,72 @@ String.prototype.ucfirst = function()
     return this.charAt(0).toUpperCase() + this.substr(1);
 }
 
+/**
+ * placePlayerBoats Places draggable boat
+ * @author orozan
+ * @param type number The number of case of a boat
+ */
+function placePlayerBoats(type) {
+	// 0: Horizontal, 1: vertical
+	let direction = Math.floor(Math.random() * 2);
+	let x = Math.floor(Math.random() * (10 - type));
+	let y = Math.floor(Math.random() * (10 - type));
+	let isOK = 0;
+	
+	for (let i = 0; i < type; i++) {
+		if (direction === 0) {
+			if ($('#player-board #cell-' + x + '-' + (y + i)).hasClass("cell-busy")) {
+				isOK++;
+			}
+		} else {
+			if ($('#player-board #cell-' + (x + i) + '-' + y).hasClass("cell-busy")) {
+				isOK++;
+			}
+		}
+	}
+
+	if (isOK > 0){
+		placePlayerBoats(type);
+	} else {
+		$('#player-board #cell-' + x + '-' + y).find('.cell-r').append("<div class='p-boat p-boat-" + type + "-" + direction + "'></div>");
+
+		for (let i = 0; i < type; i++) {
+			if (direction === 0) {
+				$('#player-board #cell-' + x + '-' + (y + i)).addClass("cell-busy");
+			} else {
+				$('#player-board #cell-' + (x + i) + '-' + y).addClass("cell-busy");
+			}
+		}
+	}
+}
+
 /*=====  Document init  ======*/
 
 $(document).ready(() => {
 	initTable("player-board");
 	initTable("cpu-board");
 	initGame();
+
+	placePlayerBoats(5);
+	placePlayerBoats(4);
+	placePlayerBoats(3);
+	placePlayerBoats(2);
+
+	// RAF: collision
+	$('.p-boat').draggable({
+		snap: '#player-board td',
+		revert: 'invalid',
+		containment: '#player-board'
+	});
+
+	$('#player-board').droppable({
+	    drop : function(e, ui) {
+	        // var uiOffset = ui.offset;
+	        // var tablePosition = $table.position();
+	        // var x = (uiOffset.left - tablePosition.left) / 20;
+	        // var y = (uiOffset.top - tablePosition.top) / 20;
+	    }
+	});
 
 	$('.difficulty label').on("click", function() {
 		$('.skill-go').removeAttr("disabled");

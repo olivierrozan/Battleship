@@ -290,3 +290,54 @@ h2 {
 .reveal {
 	background-color: green;
 }
+
+.cell-r {
+	position: relative;
+}
+
+.p-boat {
+	border: 2px solid #007bff;
+	position: absolute;
+	top: -16px;
+	left: -16px;
+}
+
+.p-boat-5-0 {
+	width: 10em;
+	height: 2em;
+}
+
+.p-boat-5-1 {
+	width: 2em;
+	height: 10em;
+}
+
+.p-boat-4-0 {
+	width: 8em;
+	height: 2em;
+}
+
+.p-boat-4-1 {
+	width: 2em;
+	height: 8em;
+}
+
+.p-boat-3-0 {
+	width: 6em;
+	height: 2em;
+}
+
+.p-boat-3-1 {
+	width: 2em;
+	height: 6em;
+}
+
+.p-boat-2-0 {
+	width: 4em;
+	height: 2em;
+}
+
+.p-boat-2-1 {
+	width: 2em;
+	height: 4em;
+}
