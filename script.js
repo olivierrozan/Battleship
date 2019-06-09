@@ -390,6 +390,63 @@ function placePlayerBoats(type) {
 	}
 }
 
+/**
+ * drag_drop Player's boats Drag n drop
+ * @author orozan
+ */
+function drag_drop() {
+	$('.p-boat').draggable({
+		snap: '#player-board td',
+		revert: 'invalid',
+		containment: '#player-board',
+		zIndex: 100,
+        drag: (e, ui) => {
+        	var overlap = false;
+
+            $('.p-boat').each(function() {
+                if (this != ui.helper[0]) { // Not the one being dragged
+                    var left = $(this).offset().left;
+                    var top = $(this).offset().top;
+                    overlap = !(ui.offset.left + ui.helper.width() < left ||
+                                ui.offset.left > left + $(this).width() ||
+                                ui.offset.top + ui.helper.height() < top ||
+                                ui.offset.top > top + $(this).height());
+                    return !overlap; // Break out when true
+                }
+            });
+
+            if (overlap) {
+            	$(e.target).css("border-color", "#dc3545");
+            } else {
+            	$(e.target).css("border-color", "#007bff");
+            }
+        },
+        stop: (e) => {
+        	$(e.target).css("border-color", "#007bff");
+        }
+	});
+
+	$('#player-board').droppable({
+	    drop : function(e, ui) {
+	        var overlap = false;
+
+            $('.p-boat').each(function() {
+                if (this != ui.helper[0]) { // Not the one being dragged
+                    var left = $(this).offset().left;
+                    var top = $(this).offset().top;
+                    overlap = !(ui.offset.left + ui.helper.width() < left ||
+                                ui.offset.left > left + $(this).width() ||
+                                ui.offset.top + ui.helper.height() < top ||
+                                ui.offset.top > top + $(this).height());
+                    return !overlap; // Break out when true
+                }
+            });
+
+            ui.draggable.draggable( 'option', 'revert', overlap );
+	    }
+	});
+}
+
 /*=====  Document init  ======*/
 
 $(document).ready(() => {
@@ -402,21 +459,7 @@ $(document).ready(() => {
 	placePlayerBoats(3);
 	placePlayerBoats(2);
 
-	// RAF: collision
-	$('.p-boat').draggable({
-		snap: '#player-board td',
-		revert: 'invalid',
-		containment: '#player-board'
-	});
-
-	$('#player-board').droppable({
-	    drop : function(e, ui) {
-	        // var uiOffset = ui.offset;
-	        // var tablePosition = $table.position();
-	        // var x = (uiOffset.left - tablePosition.left) / 20;
-	        // var y = (uiOffset.top - tablePosition.top) / 20;
-	    }
-	});
+	drag_drop();
 
 	$('.difficulty label').on("click", function() {
 		$('.skill-go').removeAttr("disabled");

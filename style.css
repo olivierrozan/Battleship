@@ -300,6 +300,7 @@ h2 {
 	position: absolute;
 	top: -16px;
 	left: -16px;
+	cursor: move;
 }
 
 .p-boat-5-0 {
