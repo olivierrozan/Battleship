@@ -2,18 +2,20 @@
 
 let CPUBoats = [];
 
-let PlayerBoats = [
-	[2,2,0,0,0,0,0,0,0,0],
-	[0,3,0,0,0,0,0,0,0,0],
-	[0,3,0,0,0,0,0,4,0,0],
-	[0,3,0,0,0,0,0,4,0,0],
-	[0,0,0,0,0,0,0,4,0,0],
-	[0,0,0,0,0,0,0,4,0,0],
-	[0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,5,5,5,5,5,0,0],
-	[0,0,0,0,0,0,0,0,0,0]
-];
+// let PlayerBoats = [
+// 	[2,2,0,0,0,0,0,0,0,0],
+// 	[0,3,0,0,0,0,0,0,0,0],
+// 	[0,3,0,0,0,0,0,4,0,0],
+// 	[0,3,0,0,0,0,0,4,0,0],
+// 	[0,0,0,0,0,0,0,4,0,0],
+// 	[0,0,0,0,0,0,0,4,0,0],
+// 	[0,0,0,0,0,0,0,0,0,0],
+// 	[0,0,0,0,0,0,0,0,0,0],
+// 	[0,0,0,5,5,5,5,5,0,0],
+// 	[0,0,0,0,0,0,0,0,0,0]
+// ];
+
+let PlayerBoats = [];
 
 /* playerTurn: 
 INIT
@@ -45,8 +47,8 @@ const gameRules_init = {
 }
 
 let gameRules = {};
-
 let TIMER = 1000;
+let newPositions = {};
 
 /*=====  Functions  ======*/
 
@@ -115,6 +117,7 @@ function initCPUPosition() {
 function initGame() {
 	gameRules = JSON.parse(JSON.stringify(gameRules_init));
 	CPUBoats = [];
+	PlayerBoats = [];
 	$('#player-wrapper').removeClass("turn");
 	$('#cpu-wrapper').addClass("turn");
 	$('#message-win').hide();
@@ -378,7 +381,7 @@ function placePlayerBoats(type) {
 	if (isOK > 0){
 		placePlayerBoats(type);
 	} else {
-		$('#player-board #cell-' + x + '-' + y).find('.cell-r').append("<div class='p-boat p-boat-" + type + "-" + direction + "'></div>");
+		$('#player-board #cell-' + x + '-' + y).find('.cell-r').append("<div class='p-boat p-boat-" + type + "-" + direction + "' data-dir='" + direction + "' data-boat='" + type + "'></div>");
 
 		for (let i = 0; i < type; i++) {
 			if (direction === 0) {
@@ -401,12 +404,11 @@ function drag_drop() {
 		containment: '#player-board',
 		zIndex: 100,
         drag: (e, ui) => {
-        	var overlap = false;
-
+        	let overlap = false;
             $('.p-boat').each(function() {
                 if (this != ui.helper[0]) { // Not the one being dragged
-                    var left = $(this).offset().left;
-                    var top = $(this).offset().top;
+                    let left = $(this).offset().left;
+                    let top = $(this).offset().top;
                     overlap = !(ui.offset.left + ui.helper.width() < left ||
                                 ui.offset.left > left + $(this).width() ||
                                 ui.offset.top + ui.helper.height() < top ||
@@ -421,19 +423,23 @@ function drag_drop() {
             	$(e.target).css("border-color", "#007bff");
             }
         },
-        stop: (e) => {
+        start: (e, ui) => {
         	$(e.target).css("border-color", "#007bff");
+        },
+        stop: (e, ui) => {
+        	$(e.target).css("border-color", "#007bff");
+        	newPositions[$(e.target).attr("data-boat")] = $(e.target).position();
         }
 	});
 
 	$('#player-board').droppable({
-	    drop : function(e, ui) {
-	        var overlap = false;
+	    drop : (e, ui) => {
+	        let overlap = false;
 
             $('.p-boat').each(function() {
                 if (this != ui.helper[0]) { // Not the one being dragged
-                    var left = $(this).offset().left;
-                    var top = $(this).offset().top;
+                    let left = $(this).offset().left;
+                    let top = $(this).offset().top;
                     overlap = !(ui.offset.left + ui.helper.width() < left ||
                                 ui.offset.left > left + $(this).width() ||
                                 ui.offset.top + ui.helper.height() < top ||
@@ -443,8 +449,49 @@ function drag_drop() {
             });
 
             ui.draggable.draggable( 'option', 'revert', overlap );
+
+            let id = $(ui.helper[0]).attr("data-boat");
 	    }
 	});
+}
+
+/**
+ * findNewBoatPosition Gets the new boats position and writes it into PlayerBoats
+ * @author orozan
+ * @params type number The boat id
+ */
+function findNewBoatPosition(type) {
+	let oldCoord = $('.p-boat[data-boat=' + type + ']').closest('td').attr("id").split("-");
+	let oldPos = -16;
+	let leftResult = ((newPositions.hasOwnProperty(type) ? newPositions[type].left : -16) - oldPos) / 32;
+	let topResult = ((newPositions.hasOwnProperty(type) ? newPositions[type].top : -16) - oldPos) / 32;
+	let a = +oldCoord[1] + topResult;
+	let b = +oldCoord[2] + leftResult;
+	let dir = +$('.p-boat[data-boat=' + type + ']').attr("data-dir");
+
+	for (let i = 0; i < type; i++) {
+		if (dir === 1) {
+			PlayerBoats[a+i][b] = type;
+		} else {
+			PlayerBoats[a][b+i] = type;
+		}
+	}
+}
+
+/**
+ * initPlayerPosition Inits the player boats position
+ * @author orozan
+ */
+function initPlayerPosition() {
+	for (let i = 0; i < 10; i++) {
+		let oliv = Array(10).fill(0);
+		PlayerBoats.push(oliv);
+	}
+
+	findNewBoatPosition(5);
+	findNewBoatPosition(4);
+	findNewBoatPosition(3);
+	findNewBoatPosition(2);
 }
 
 /*=====  Document init  ======*/
@@ -466,6 +513,8 @@ $(document).ready(() => {
 	});
 
 	$('.skill-go').on("click", function() {
+		console.table(PlayerBoats);
+		initPlayerPosition();
 		initCPUPosition();
 		let text = $('.difficulty input:checked').attr("id").split("-")[1].ucfirst();
 
