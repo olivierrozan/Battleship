@@ -1,20 +1,6 @@
 /*=====  Globals variables  ======*/
 
 let CPUBoats = [];
-
-// let PlayerBoats = [
-// 	[2,2,0,0,0,0,0,0,0,0],
-// 	[0,3,0,0,0,0,0,0,0,0],
-// 	[0,3,0,0,0,0,0,4,0,0],
-// 	[0,3,0,0,0,0,0,4,0,0],
-// 	[0,0,0,0,0,0,0,4,0,0],
-// 	[0,0,0,0,0,0,0,4,0,0],
-// 	[0,0,0,0,0,0,0,0,0,0],
-// 	[0,0,0,0,0,0,0,0,0,0],
-// 	[0,0,0,5,5,5,5,5,0,0],
-// 	[0,0,0,0,0,0,0,0,0,0]
-// ];
-
 let PlayerBoats = [];
 
 /* playerTurn: 
@@ -368,11 +354,11 @@ function placePlayerBoats(type) {
 	
 	for (let i = 0; i < type; i++) {
 		if (direction === 0) {
-			if ($('#player-board #cell-' + x + '-' + (y + i)).hasClass("cell-busy")) {
+			if ($('#player-board #cell-' + x + '-' + (y + i)).attr("data-cell") === "busy") {
 				isOK++;
 			}
 		} else {
-			if ($('#player-board #cell-' + (x + i) + '-' + y).hasClass("cell-busy")) {
+			if ($('#player-board #cell-' + (x + i) + '-' + y).attr("data-cell") === "busy") {
 				isOK++;
 			}
 		}
@@ -385,11 +371,13 @@ function placePlayerBoats(type) {
 
 		for (let i = 0; i < type; i++) {
 			if (direction === 0) {
-				$('#player-board #cell-' + x + '-' + (y + i)).addClass("cell-busy");
+				$('#player-board #cell-' + x + '-' + (y + i)).attr("data-cell", "busy");
 			} else {
-				$('#player-board #cell-' + (x + i) + '-' + y).addClass("cell-busy");
+				$('#player-board #cell-' + (x + i) + '-' + y).attr("data-cell", "busy");
 			}
 		}
+
+		newPositions[type] = {"top": -16, "left": -16};
 	}
 }
 
@@ -425,10 +413,44 @@ function drag_drop() {
         },
         start: (e, ui) => {
         	$(e.target).css("border-color", "#007bff");
+
+        	let type = $(e.target).attr("data-boat");
+        	let direction = $(e.target).attr("data-dir");
+        	let oldCoord = $('.p-boat[data-boat=' + type + ']').closest('td').attr("id").split("-");
+			let oldPos = -16;
+			let leftResult = (newPositions[type].left - oldPos) / 32;
+			let topResult = (newPositions[type].top - oldPos) / 32;
+			let a = +oldCoord[1] + topResult;
+			let b = +oldCoord[2] + leftResult;
+
+			for (let i = 0; i < type; i++) {
+				if (direction === "0") {
+					$('#player-board #cell-' + a + '-' + (b+i)).removeAttr("data-cell");
+				} else {
+					$('#player-board #cell-' + (a+i) + '-' + b).removeAttr("data-cell");
+				}
+			}
         },
         stop: (e, ui) => {
         	$(e.target).css("border-color", "#007bff");
         	newPositions[$(e.target).attr("data-boat")] = $(e.target).position();
+
+        	let type = $(e.target).attr("data-boat");
+        	let direction = $(e.target).attr("data-dir");
+   			let oldCoord = $('.p-boat[data-boat=' + type + ']').closest('td').attr("id").split("-");
+			let oldPos = -16;
+			let leftResult = (newPositions[type].left - oldPos) / 32;
+			let topResult = (newPositions[type].top - oldPos) / 32;
+			let a = +oldCoord[1] + topResult;
+			let b = +oldCoord[2] + leftResult;
+
+			for (let i = 0; i < type; i++) {
+				if (direction === "0") {
+					$('#player-board #cell-' + a + '-' + (b+i)).attr("data-cell", "busy");
+				} else {
+					$('#player-board #cell-' + (a+i) + '-' + b).attr("data-cell", "busy");
+				}
+			}
         }
 	});
 
@@ -449,8 +471,6 @@ function drag_drop() {
             });
 
             ui.draggable.draggable( 'option', 'revert', overlap );
-
-            let id = $(ui.helper[0]).attr("data-boat");
 	    }
 	});
 }
@@ -463,8 +483,8 @@ function drag_drop() {
 function findNewBoatPosition(type) {
 	let oldCoord = $('.p-boat[data-boat=' + type + ']').closest('td').attr("id").split("-");
 	let oldPos = -16;
-	let leftResult = ((newPositions.hasOwnProperty(type) ? newPositions[type].left : -16) - oldPos) / 32;
-	let topResult = ((newPositions.hasOwnProperty(type) ? newPositions[type].top : -16) - oldPos) / 32;
+	let leftResult = (newPositions[type].left - oldPos) / 32;
+	let topResult = (newPositions[type].top - oldPos) / 32;
 	let a = +oldCoord[1] + topResult;
 	let b = +oldCoord[2] + leftResult;
 	let dir = +$('.p-boat[data-boat=' + type + ']').attr("data-dir");
@@ -508,12 +528,76 @@ $(document).ready(() => {
 
 	drag_drop();
 
+	$('.p-boat').on("dblclick", (e) => {
+		let type = $(e.target).attr('data-boat');
+		let oldDirection = $(e.target).attr('data-dir');
+
+		let oldCoord = $('.p-boat[data-boat=' + type + ']').closest('td').attr("id").split("-");
+		let oldPos = -16;
+		let leftResult = (newPositions[type].left - oldPos) / 32;
+		let topResult = (newPositions[type].top - oldPos) / 32;
+		let a = +oldCoord[1] + topResult;
+		let b = +oldCoord[2] + leftResult;
+
+		// Si l'ancienne direction est verticale
+		if (oldDirection === "1") {
+			let offset = b + +type;
+			let isOK = 0;
+
+			for (let i = 1; i < type; i++) {
+				if ($('#player-board #cell-' + a + '-' + (b+i)).attr("data-cell") === "busy") {
+					isOK++;
+				}
+			}
+
+			// Si le bateau ne dépasse pas le tableau
+			if (offset <= 10 && isOK === 0) {
+				// La nouvelle direction est horizontale
+				let newDirection = oldDirection === "0" ? "1" : "0";
+				$(e.target).removeClass("p-boat-" + type + "-" + oldDirection).addClass("p-boat-" + type + "-" + newDirection).attr("data-dir", newDirection);
+
+				$('#player-board #cell-' + a + '-' + b).attr("data-cell", "busy");
+				for (let i = 1; i < type; i++) {
+					$('#player-board #cell-' + a + '-' + (b+i)).attr("data-cell", "busy");
+					$('#player-board #cell-' + (a+i) + '-' + b).removeAttr("data-cell");
+				}
+			} else {
+				console.log("OOB");
+			}
+		} else {
+			// Si l'ancienne direction est horizontale
+			let offset = a + +type;
+			let isOK = 0;
+
+			for (let i = 1; i < type; i++) {
+				if ($('#player-board #cell-' + (a+i) + '-' + b).attr("data-cell") === "busy") {
+					isOK++;
+				}
+			}
+
+			// Si le bateau ne dépasse pas le tableau
+			if (offset <= 10 && isOK === 0) {
+				// La nouvelle direction est verticale
+				let newDirection = oldDirection === "0" ? "1" : "0";
+				$(e.target).removeClass("p-boat-" + type + "-" + oldDirection).addClass("p-boat-" + type + "-" + newDirection).attr("data-dir", newDirection);
+
+				$('#player-board #cell-' + a + '-' + b).attr("data-cell", "busy");
+				for (let i = 1; i < type; i++) {
+					$('#player-board #cell-' + a + '-' + (b+i)).removeAttr("data-cell");
+					$('#player-board #cell-' + (a+i) + '-' + b).attr("data-cell", "busy");
+				}
+			} else {
+				console.log("OOB");
+			}
+		}
+		
+	});
+
 	$('.difficulty label').on("click", function() {
 		$('.skill-go').removeAttr("disabled");
 	});
 
 	$('.skill-go').on("click", function() {
-		console.table(PlayerBoats);
 		initPlayerPosition();
 		initCPUPosition();
 		let text = $('.difficulty input:checked').attr("id").split("-")[1].ucfirst();
