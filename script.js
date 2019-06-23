@@ -367,7 +367,8 @@ function placePlayerBoats(type) {
 	if (isOK > 0){
 		placePlayerBoats(type);
 	} else {
-		$('#player-board #cell-' + x + '-' + y).find('.cell-r').append("<div class='p-boat p-boat-" + type + "-" + direction + "' data-dir='" + direction + "' data-boat='" + type + "'></div>");
+		let boat = "<div class='p-boat p-boat-" + type + "-" + direction + "' data-dir='" + direction + "' data-boat='" + type + "'></div>";
+		$('#player-board #cell-' + x + '-' + y).find('.cell-r').append(boat);
 
 		for (let i = 0; i < type; i++) {
 			if (direction === 0) {
@@ -382,6 +383,48 @@ function placePlayerBoats(type) {
 }
 
 /**
+ * hitbox Prevents boats from overlapping
+ * @author orozan
+ * @params ui Object draggable element
+ * @return overlap boolean can move boat or not 
+ */
+function hitbox(ui) {
+	let overlap = false;
+
+    $('.p-boat').each(function() {
+        if (this != ui.helper[0]) { // Not the one being dragged
+            let left = $(this).offset().left;
+            let top = $(this).offset().top;
+            overlap = !(ui.offset.left + ui.helper.width() < left ||
+                        ui.offset.left > left + $(this).width() ||
+                        ui.offset.top + ui.helper.height() < top ||
+                        ui.offset.top > top + $(this).height());
+            return !overlap; // Break out when true
+        }
+    });
+
+    return overlap;
+}
+
+/**
+ * getNewPositions Gets the new boats positions after drag n drop
+ * @author orozan
+ * @params type string boat
+ * @return {a, b} object the new boats positions
+ */
+function getNewPositions(type) {
+	let oldCoord = $('.p-boat[data-boat=' + type + ']').closest('td').attr("id").split("-");
+	let oldPos = -16;
+	let leftResult = (newPositions[type].left - oldPos) / 32;
+	let topResult = (newPositions[type].top - oldPos) / 32;
+	
+	return {
+		a: +oldCoord[1] + topResult,
+		b: +oldCoord[2] + leftResult
+	};
+}
+
+/**
  * drag_drop Player's boats Drag n drop
  * @author orozan
  */
@@ -392,18 +435,7 @@ function drag_drop() {
 		containment: '#player-board',
 		zIndex: 100,
         drag: (e, ui) => {
-        	let overlap = false;
-            $('.p-boat').each(function() {
-                if (this != ui.helper[0]) { // Not the one being dragged
-                    let left = $(this).offset().left;
-                    let top = $(this).offset().top;
-                    overlap = !(ui.offset.left + ui.helper.width() < left ||
-                                ui.offset.left > left + $(this).width() ||
-                                ui.offset.top + ui.helper.height() < top ||
-                                ui.offset.top > top + $(this).height());
-                    return !overlap; // Break out when true
-                }
-            });
+        	let overlap = hitbox(ui);
 
             if (overlap) {
             	$(e.target).css("border-color", "#dc3545");
@@ -411,44 +443,38 @@ function drag_drop() {
             	$(e.target).css("border-color", "#007bff");
             }
         },
-        start: (e, ui) => {
-        	$(e.target).css("border-color", "#007bff");
+        start: (e) => {
+        	let target = $(e.target);
+        	target.css("border-color", "#007bff");
 
-        	let type = $(e.target).attr("data-boat");
-        	let direction = $(e.target).attr("data-dir");
-        	let oldCoord = $('.p-boat[data-boat=' + type + ']').closest('td').attr("id").split("-");
-			let oldPos = -16;
-			let leftResult = (newPositions[type].left - oldPos) / 32;
-			let topResult = (newPositions[type].top - oldPos) / 32;
-			let a = +oldCoord[1] + topResult;
-			let b = +oldCoord[2] + leftResult;
+        	let type = target.attr("data-boat");
+        	let direction = target.attr("data-dir");
+
+			let data = getNewPositions(type);
 
 			for (let i = 0; i < type; i++) {
 				if (direction === "0") {
-					$('#player-board #cell-' + a + '-' + (b+i)).removeAttr("data-cell");
+					$('#player-board #cell-' + data.a + '-' + (data.b+i)).removeAttr("data-cell");
 				} else {
-					$('#player-board #cell-' + (a+i) + '-' + b).removeAttr("data-cell");
+					$('#player-board #cell-' + (data.a+i) + '-' + data.b).removeAttr("data-cell");
 				}
 			}
         },
-        stop: (e, ui) => {
-        	$(e.target).css("border-color", "#007bff");
-        	newPositions[$(e.target).attr("data-boat")] = $(e.target).position();
+        stop: (e) => {
+        	let target = $(e.target);
+        	target.css("border-color", "#007bff");
+        	newPositions[target.attr("data-boat")] = target.position();
 
-        	let type = $(e.target).attr("data-boat");
-        	let direction = $(e.target).attr("data-dir");
-   			let oldCoord = $('.p-boat[data-boat=' + type + ']').closest('td').attr("id").split("-");
-			let oldPos = -16;
-			let leftResult = (newPositions[type].left - oldPos) / 32;
-			let topResult = (newPositions[type].top - oldPos) / 32;
-			let a = +oldCoord[1] + topResult;
-			let b = +oldCoord[2] + leftResult;
+        	let type = target.attr("data-boat");
+        	let direction = target.attr("data-dir");
+   			
+   			let data = getNewPositions(type);
 
 			for (let i = 0; i < type; i++) {
 				if (direction === "0") {
-					$('#player-board #cell-' + a + '-' + (b+i)).attr("data-cell", "busy");
+					$('#player-board #cell-' + data.a + '-' + (data.b+i)).attr("data-cell", "busy");
 				} else {
-					$('#player-board #cell-' + (a+i) + '-' + b).attr("data-cell", "busy");
+					$('#player-board #cell-' + (data.a+i) + '-' + data.b).attr("data-cell", "busy");
 				}
 			}
         }
@@ -456,19 +482,7 @@ function drag_drop() {
 
 	$('#player-board').droppable({
 	    drop : (e, ui) => {
-	        let overlap = false;
-
-            $('.p-boat').each(function() {
-                if (this != ui.helper[0]) { // Not the one being dragged
-                    let left = $(this).offset().left;
-                    let top = $(this).offset().top;
-                    overlap = !(ui.offset.left + ui.helper.width() < left ||
-                                ui.offset.left > left + $(this).width() ||
-                                ui.offset.top + ui.helper.height() < top ||
-                                ui.offset.top > top + $(this).height());
-                    return !overlap; // Break out when true
-                }
-            });
+	        let overlap = hitbox(ui);
 
             ui.draggable.draggable( 'option', 'revert', overlap );
 	    }
@@ -481,19 +495,15 @@ function drag_drop() {
  * @params type number The boat id
  */
 function findNewBoatPosition(type) {
-	let oldCoord = $('.p-boat[data-boat=' + type + ']').closest('td').attr("id").split("-");
-	let oldPos = -16;
-	let leftResult = (newPositions[type].left - oldPos) / 32;
-	let topResult = (newPositions[type].top - oldPos) / 32;
-	let a = +oldCoord[1] + topResult;
-	let b = +oldCoord[2] + leftResult;
 	let dir = +$('.p-boat[data-boat=' + type + ']').attr("data-dir");
+
+	let data = getNewPositions(type);
 
 	for (let i = 0; i < type; i++) {
 		if (dir === 1) {
-			PlayerBoats[a+i][b] = type;
+			PlayerBoats[data.a+i][data.b] = type;
 		} else {
-			PlayerBoats[a][b+i] = type;
+			PlayerBoats[data.a][data.b+i] = type;
 		}
 	}
 }
@@ -504,14 +514,13 @@ function findNewBoatPosition(type) {
  */
 function initPlayerPosition() {
 	for (let i = 0; i < 10; i++) {
-		let oliv = Array(10).fill(0);
-		PlayerBoats.push(oliv);
+		let tmp = Array(10).fill(0);
+		PlayerBoats.push(tmp);
 	}
 
-	findNewBoatPosition(5);
-	findNewBoatPosition(4);
-	findNewBoatPosition(3);
-	findNewBoatPosition(2);
+	for (let i = 5; i >= 2; i--) {
+		findNewBoatPosition(i);
+	}
 }
 
 /*=====  Document init  ======*/
@@ -521,31 +530,26 @@ $(document).ready(() => {
 	initTable("cpu-board");
 	initGame();
 
-	placePlayerBoats(5);
-	placePlayerBoats(4);
-	placePlayerBoats(3);
-	placePlayerBoats(2);
+	for (let i = 5; i >= 2; i--) {
+		placePlayerBoats(i);
+	}
 
 	drag_drop();
 
 	$('.p-boat').on("dblclick", (e) => {
-		let type = $(e.target).attr('data-boat');
-		let oldDirection = $(e.target).attr('data-dir');
+		let target = $(e.target);
+		let type = target.attr('data-boat');
+		let oldDirection = target.attr('data-dir');
 
-		let oldCoord = $('.p-boat[data-boat=' + type + ']').closest('td').attr("id").split("-");
-		let oldPos = -16;
-		let leftResult = (newPositions[type].left - oldPos) / 32;
-		let topResult = (newPositions[type].top - oldPos) / 32;
-		let a = +oldCoord[1] + topResult;
-		let b = +oldCoord[2] + leftResult;
+		let data = getNewPositions(type);
 
 		// Si l'ancienne direction est verticale
 		if (oldDirection === "1") {
-			let offset = b + +type;
+			let offset = data.b + +type;
 			let isOK = 0;
 
 			for (let i = 1; i < type; i++) {
-				if ($('#player-board #cell-' + a + '-' + (b+i)).attr("data-cell") === "busy") {
+				if ($('#player-board #cell-' + data.a + '-' + (data.b+i)).attr("data-cell") === "busy") {
 					isOK++;
 				}
 			}
@@ -554,23 +558,23 @@ $(document).ready(() => {
 			if (offset <= 10 && isOK === 0) {
 				// La nouvelle direction est horizontale
 				let newDirection = oldDirection === "0" ? "1" : "0";
-				$(e.target).removeClass("p-boat-" + type + "-" + oldDirection).addClass("p-boat-" + type + "-" + newDirection).attr("data-dir", newDirection);
+				target.removeClass("p-boat-" + type + "-" + oldDirection).addClass("p-boat-" + type + "-" + newDirection).attr("data-dir", newDirection);
 
-				$('#player-board #cell-' + a + '-' + b).attr("data-cell", "busy");
+				$('#player-board #cell-' + data.a + '-' + data.b).attr("data-cell", "busy");
 				for (let i = 1; i < type; i++) {
-					$('#player-board #cell-' + a + '-' + (b+i)).attr("data-cell", "busy");
-					$('#player-board #cell-' + (a+i) + '-' + b).removeAttr("data-cell");
+					$('#player-board #cell-' + data.a + '-' + (data.b+i)).attr("data-cell", "busy");
+					$('#player-board #cell-' + (data.a+i) + '-' + data.b).removeAttr("data-cell");
 				}
 			} else {
 				console.log("OOB");
 			}
 		} else {
 			// Si l'ancienne direction est horizontale
-			let offset = a + +type;
+			let offset = data.a + +type;
 			let isOK = 0;
 
 			for (let i = 1; i < type; i++) {
-				if ($('#player-board #cell-' + (a+i) + '-' + b).attr("data-cell") === "busy") {
+				if ($('#player-board #cell-' + (data.a+i) + '-' + data.b).attr("data-cell") === "busy") {
 					isOK++;
 				}
 			}
@@ -579,18 +583,17 @@ $(document).ready(() => {
 			if (offset <= 10 && isOK === 0) {
 				// La nouvelle direction est verticale
 				let newDirection = oldDirection === "0" ? "1" : "0";
-				$(e.target).removeClass("p-boat-" + type + "-" + oldDirection).addClass("p-boat-" + type + "-" + newDirection).attr("data-dir", newDirection);
+				target.removeClass("p-boat-" + type + "-" + oldDirection).addClass("p-boat-" + type + "-" + newDirection).attr("data-dir", newDirection);
 
-				$('#player-board #cell-' + a + '-' + b).attr("data-cell", "busy");
+				$('#player-board #cell-' + data.a + '-' + data.b).attr("data-cell", "busy");
 				for (let i = 1; i < type; i++) {
-					$('#player-board #cell-' + a + '-' + (b+i)).removeAttr("data-cell");
-					$('#player-board #cell-' + (a+i) + '-' + b).attr("data-cell", "busy");
+					$('#player-board #cell-' + data.a + '-' + (data.b+i)).removeAttr("data-cell");
+					$('#player-board #cell-' + (data.a+i) + '-' + data.b).attr("data-cell", "busy");
 				}
 			} else {
 				console.log("OOB");
 			}
 		}
-		
 	});
 
 	$('.difficulty label').on("click", function() {
