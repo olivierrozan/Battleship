@@ -90,10 +90,9 @@ function initCPUPosition() {
 		}
 	}
 
-	placeBoats(5);
-	placeBoats(4);
-	placeBoats(3);
-	placeBoats(2);
+	for (let i = 5; i >= 2; i--) {
+		placeBoats(i);
+	}
 }
 
 /**
@@ -120,19 +119,55 @@ function initGame() {
 /**
  * log Displays message
  * @author orozan
- * @params player string Player / CPU
- * @params x string x position
- * @params y string y position
- * @params boat string The hit boat
- * @params state string hit / sunk / missed
+ * @params player  string  Player / CPU
+ * @params x       string  x position
+ * @params y       string  y position
+ * @params boat    string  The hit boat
+ * @params state   string  hit / sunk / missed
  */
 function log(player, x, y, boat, state) {
-	x = +x;
+	x = +x + 1;
 	let playerElement = "<td class=" + player + ">" + player + "</td>";
-	let position = "<td class='message-coord'>" + String.fromCharCode(65 + x) + "-" + y + "</td>";
+	let position = "<td class='message-coord'>" + String.fromCharCode(64 + x) + "-" + (+y + 1) + "</td>";
 	let boatElement = boat === "" ? "<td class='message-boat'></td>" : "<td class='message-boat'>" + boat + "</td>";
 	let stateElement = "<td class='message-state'>" + state + "</td>";
 	$('#history>table').prepend("<tr>" + playerElement + position + boatElement + stateElement + "</tr>");
+}
+
+/**
+ * hitABoat When player / cpu hits a boat
+ * @author orozan
+ * @params _Boats        array   Player / CPU cells
+ * @params x             string  x position
+ * @params y             string  y position
+ * @params target        string  The target
+ * @params player        string  Player / CPU
+ * @params _gameRules    object  player / cpu gameRules variable
+ * @params boardElement  string  player / cpu board element
+ * @params boardWrapper  string  player / cpu table
+ */
+function hitABoat(_Boats, x, y, target, player, _gameRules, boardElement, boardWrapper) {
+	for (let el in gameRules.boatsSize) {
+		// Hit: can play once again
+		if (_Boats[x][y] === gameRules.boatsSize[el]) {
+			_gameRules[el]++;
+			target.addClass(el + ' hit');
+			log(player, x, y, el, "hit");
+
+			if (_gameRules[el] === gameRules.boatsSize[el]) {
+				$(boardElement).find('.' + el).removeClass("hit").addClass("sunk");
+				log(player, x, y, el, "sunk");
+				$(boardWrapper + ' .boats-feedback').find('.f-' + el).addClass("f-sunk-boat");
+			}
+
+			if (player === "Player") {
+				gameOver(gameRules.player);
+			} else {
+				target.attr("data-yet", "1");
+				gameOver(gameRules.cpu, () => setTimeout(CPUTurn, TIMER));
+			}
+		} 
+	}
 }
 
 /**
@@ -144,24 +179,8 @@ function playerTurn() {
 		if (gameRules.playerTurn === "PLAYER") {
 			if ($(this).attr("data-yet") === "0") {
 				let position = $(this).attr("id").split("-");
-
-				for (let el in gameRules.boatsSize) {
-					// Hit: can play once again
-					if (CPUBoats[position[1]][position[2]] === gameRules.boatsSize[el]) {
-						gameRules.player[el]++;
-						$(this).addClass(el + ' hit');
-						log("Player", position[1], position[2], el, "hit");
-
-						if (gameRules.player[el] === gameRules.boatsSize[el]) {
-							$('#cpu-board').find('.' + el).removeClass("hit").addClass("sunk");
-							log("Player", position[1], position[2], el, "sunk");
-							$('#cpu-wrapper .boats-feedback').find('.f-' + el).addClass("f-sunk-boat");
-						}
-
-						gameOver(gameRules.player);
-					} 
-				}
-
+				hitABoat(CPUBoats, position[1], position[2], $(this), "Player", gameRules.player, '#cpu-board', '#cpu-wrapper');
+				
 				// Missed: cpu turn
 				if (CPUBoats[position[1]][position[2]] === 0) {
 					$(this).addClass('missed');
@@ -190,23 +209,7 @@ function CPUHitsABoat() {
 	let target = $('#player-board #cell-' + x + '-' + y);
 
 	if (target.attr("data-yet") === "0") {
-		for (let el in gameRules.boatsSize) {
-			// Hit: can play another time
-			if (PlayerBoats[x][y] === gameRules.boatsSize[el]) {
-				gameRules.cpu[el]++;
-				target.addClass(el + ' hit');
-				log("CPU", x, y, el, "hit");
-
-				if (gameRules.cpu[el] === gameRules.boatsSize[el]) {
-					$('#player-board').find('.' + el).removeClass("hit").addClass("sunk");
-					log("CPU", x, y, el, "sunk");
-					$('#player-wrapper .boats-feedback').find('.f-' + el).addClass("f-sunk-boat");
-				}
-
-				target.attr("data-yet", "1");
-				gameOver(gameRules.cpu, () => setTimeout(CPUTurn, TIMER));
-			} 
-		}
+		hitABoat(PlayerBoats, x, y, target, "CPU", gameRules.cpu, '#player-board', '#player-wrapper');
 
 		// Missed: cpu turn
 		if (PlayerBoats[x][y] === 0) {
