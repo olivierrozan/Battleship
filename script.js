@@ -83,11 +83,8 @@ function initCPUPosition() {
 	CPUBoats = [];
 	
 	for (let i = 0; i < 10; i++) {
-		CPUBoats[i] = [];
-
-		for (let j = 0; j < 10; j++) {
-			CPUBoats[i][j] = 0;
-		}
+		let tmp = Array(10).fill(0);
+		CPUBoats.push(tmp);
 	}
 
 	for (let i = 5; i >= 2; i--) {
@@ -317,7 +314,7 @@ function gameOver(check, fail = null) {
  * @args target string The table id
  */
 function initTable(target) {
-	let table = $('#wrapper div #' + target);
+	let table = $('section div #' + target);
 
 	for (let i = 0; i < 10; i++) {
 		table.append("<tr id='row-" + i + "'>");

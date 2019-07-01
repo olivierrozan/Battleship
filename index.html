@@ -10,57 +10,66 @@
 	</head>
 	
 	<body>
-		<section id="wrapper">
+		<header>
 			<h2>Battleship<span id="skill-message"></span></h2>
-			<div id="message">
-				<div class="difficulty">
-					<span>Select a skill:</span>
+		</header>
 
-					<input type="radio" id="skill-easy" name="skill" data-skill="Easy" value="25" />
-					<label for="skill-easy">Easy</label>
-				
-					<input type="radio" id="skill-medium" name="skill" data-skill="Medium" value="50" />
-					<label for="skill-medium">Medium</label>
-				
-					<input type="radio" id="skill-hard" name="skill" data-skill="hard" value="75" />
-					<label for="skill-hard">Hard</label>
+		<div class="container">
+			<section>
+				<div id="message">
+					<div class="btn-group btn-group-toggle difficulty" data-toggle="buttons">
+						<label class="btn btn-primary active">
+							<input type="radio" name="skill" id="skill-easy" data-skill="Easy" value="25" autocomplete="off" checked> Easy
+						</label>
+
+						<label class="btn btn-primary">
+							<input type="radio" name="skill" id="skill-medium" data-skill="Medium" value="50" autocomplete="off"> Medium
+						</label>
+
+						<label class="btn btn-primary">
+							<input type="radio" name="skill" id="skill-hard" data-skill="Hard" value="75" autocomplete="off"> Hard
+						</label>
+
+						<button type="button" class="skill-go" disabled>Start</button>
+					</div>
 					
-					<button type="button" class="skill-go" disabled>Start</button>
+					<div id="message-win">
+						<span></span>
+						<button id="reset-game">Reset</button>
+					</div>
 				</div>
-				
-				<div id="message-win">
-					<span></span>
-					<button id="reset-game">Reset</button>
-				</div>
-			</div>
 
-			<div id="player-wrapper">
-				<h3 class="player-label">PLAYER</h3>
-				<table id="player-board" style="float: left;"></table>
-				<div class="boats-feedback" style="float: left; margin-left: 25px;">
-					<div class="fb f-destroyer"></div>
-					<div class="fb f-cruiser"></div>
-					<div class="fb f-battleship"></div>
-					<div class="fb f-carrier"></div>
-				</div>
-				<div class="clearfix"></div>
-			</div>
+				<div class="row">
+					<div id="player-wrapper" class="col-lg col-md col-sm col-xs">
+						<h3 class="player-label">PLAYER</h3>
+						<div class="row">
+							<table id="player-board"></table>
+							<div class="boats-feedback boats-feedback-l">
+								<div class="fb f-destroyer"></div>
+								<div class="fb f-cruiser"></div>
+								<div class="fb f-battleship"></div>
+								<div class="fb f-carrier"></div>
+							</div>
+						</div>
+					</div>
 
-			<div id="cpu-wrapper">
-				<h3 class="player-label">CPU</h3>
-				<div class="boats-feedback" style="float: left; margin-right: 50px;">
-					<div class="fb f-destroyer"></div>
-					<div class="fb f-cruiser"></div>
-					<div class="fb f-battleship"></div>
-					<div class="fb f-carrier"></div>
+					<div id="cpu-wrapper" class="col-lg col-md col-sm col-xs">
+						<h3 class="player-label">CPU</h3>
+						<div class="row">
+							<table id="cpu-board"></table>
+							<div class="boats-feedback boats-feedback-l">
+								<div class="fb f-destroyer"></div>
+								<div class="fb f-cruiser"></div>
+								<div class="fb f-battleship"></div>
+								<div class="fb f-carrier"></div>
+							</div>
+						</div>
+					</div>
 				</div>
-				<table id="cpu-board" style="float: left;"></table>
-				<div class="clearfix"></div>
-			</div>
-			<div class="clearfix"></div>
 
-			<div id="history"><table></table></div>
-		</section>
+				<div id="history"><table></table></div>
+			</section>
+		</div>
 		
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>

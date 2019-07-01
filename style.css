@@ -2,9 +2,9 @@ body {
 	background-color: #eee;
 }
 
-#wrapper {
-	margin: 50px auto;
-	width: 990px;
+.row{
+	margin-left: 0px;
+	margin-right: 0px;
 }
 
 #player-board, #cpu-board {
@@ -17,23 +17,14 @@ body {
 	padding: 15px;
 }
 
-#player-wrapper {
-	float: left;
+#player-wrapper, #cpu-wrapper {
 	border: 3px solid #007bff;
     border-radius: 8px;
-    padding: 0px 10px 0px 30px;
-}
-
-#cpu-wrapper {
-	float: right;
-	border: 3px solid #007bff;
-    border-radius: 8px;
-    padding: 0px 10px 0px 30px;
+    padding: 0px 30px;
 }
 
 #player-board td:hover, #cpu-board td:hover {
 	cursor: pointer;
-	/*background-color: #ddd;*/
 }
 
 .missed, .missed:hover {
@@ -48,45 +39,44 @@ body {
 	background-color: #000;
 }
 
-.clearfix {
-	clear: both;
+.fb {
+	background-color: #007bff;
+    height: 15px;
+    margin: 10px 0px;
 }
 
 .f-destroyer {
-	background-color: #007bff;
     width: 30px;
-    height: 15px;
-    margin: 10px 0px;
 }
 
 .f-cruiser {
-	background-color: #007bff;
     width: 45px;
-    height: 15px;
-    margin: 10px 0px;
 }
 
 .f-battleship {
-	background-color: #007bff;
     width: 60px;
-    height: 15px;
-    margin: 10px 0px;
 }
 
 .f-carrier {
-	background-color: #007bff;
     width: 75px;
-    height: 15px;
-    margin: 10px 0px;
 }
 
 .boats-feedback {
     margin-top: 100px;
 }
 
+.boats-feedback-l {
+	margin-left: 10px;
+}
+
+.boats-feedback-r {
+	margin-right: 35px;
+}
+
 h2 {
 	font-size: 2em;
 	text-align: center;
+	margin-top: 20px;
 }
 
 #history {
@@ -144,7 +134,6 @@ h2 {
 
 #message-win {
 	text-align: center;
-    /*margin: 30px 0px;*/
     font-size: 1.5em;
     font-weight: bold;
     display: none;
@@ -156,12 +145,7 @@ h2 {
 
 .difficulty {
 	margin: 0px auto;
-	/*margin: 20px auto;*/
     width: 50%;
-    position: relative;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
 }
 
 .difficulty input[type=radio] {
