@@ -112,6 +112,7 @@ function initGame() {
 	$('#skill-message').empty().removeClass().hide();
 	$('td').removeAttr("class").attr("data-yet", "0");
 	$('.fb').removeClass('f-sunk-boat');
+	$( ".p-boat" ).draggable( "enable" );
 }
 
 /**
@@ -542,61 +543,67 @@ function initPlayerPosition() {
  */
 function switchBoatPosition() {
 	$('.p-boat').on("dblclick", (e) => {
-		let target = $(e.target);
-		let type = target.attr('data-boat');
-		let oldDirection = target.attr('data-dir');
+		if (gameRules.playerTurn === "INIT") {
+			let target = $(e.target);
+			let type = target.attr('data-boat');
+			let oldDirection = target.attr('data-dir');
 
-		let data = getNewPositions(type);
+			let data = getNewPositions(type);
 
-		// Si l'ancienne direction est verticale
-		if (oldDirection === "1") {
-			let offset = data.b + +type;
-			let isOK = 0;
+			// Si l'ancienne direction est verticale
+			if (oldDirection === "1") {
+				let offset = data.b + +type;
+				let isOK = 0;
 
-			for (let i = 1; i < type; i++) {
-				if ($('#player-board #cell-' + data.a + '-' + (data.b+i)).attr("data-cell") === "busy") {
-					isOK++;
-				}
-			}
-
-			// Si le bateau ne dépasse pas le tableau
-			if (offset <= 10 && isOK === 0) {
-				// La nouvelle direction est horizontale
-				let newDirection = oldDirection === "0" ? "1" : "0";
-				target.removeClass("p-boat-" + type + "-" + oldDirection).addClass("p-boat-" + type + "-" + newDirection).attr("data-dir", newDirection);
-
-				$('#player-board #cell-' + data.a + '-' + data.b).attr("data-cell", "busy");
 				for (let i = 1; i < type; i++) {
-					$('#player-board #cell-' + data.a + '-' + (data.b+i)).attr("data-cell", "busy");
-					$('#player-board #cell-' + (data.a+i) + '-' + data.b).removeAttr("data-cell");
+					if ($('#player-board #cell-' + data.a + '-' + (data.b+i)).attr("data-cell") === "busy") {
+						isOK++;
+					}
+				}
+
+				// Si le bateau ne dépasse pas le tableau
+				if (offset <= 10 && isOK === 0) {
+					// La nouvelle direction est horizontale
+					let newDirection = oldDirection === "0" ? "1" : "0";
+					target.removeClass("p-boat-" + type + "-" + oldDirection).addClass("p-boat-" + type + "-" + newDirection).attr("data-dir", newDirection);
+
+					$('#player-board #cell-' + data.a + '-' + data.b).attr("data-cell", "busy");
+					for (let i = 1; i < type; i++) {
+						$('#player-board #cell-' + data.a + '-' + (data.b+i)).attr("data-cell", "busy");
+						$('#player-board #cell-' + (data.a+i) + '-' + data.b).removeAttr("data-cell");
+					}
+				} else {
+					console.log("OOB: cannot flip");
+					target.addClass("blink");
+					setTimeout(() => {
+						target.removeClass("blink");
+					}, 1000);
 				}
 			} else {
-				console.log("OOB");
-			}
-		} else {
-			// Si l'ancienne direction est horizontale
-			let offset = data.a + +type;
-			let isOK = 0;
+				// Si l'ancienne direction est horizontale
+				let offset = data.a + +type;
+				let isOK = 0;
 
-			for (let i = 1; i < type; i++) {
-				if ($('#player-board #cell-' + (data.a+i) + '-' + data.b).attr("data-cell") === "busy") {
-					isOK++;
-				}
-			}
-
-			// Si le bateau ne dépasse pas le tableau
-			if (offset <= 10 && isOK === 0) {
-				// La nouvelle direction est verticale
-				let newDirection = oldDirection === "0" ? "1" : "0";
-				target.removeClass("p-boat-" + type + "-" + oldDirection).addClass("p-boat-" + type + "-" + newDirection).attr("data-dir", newDirection);
-
-				$('#player-board #cell-' + data.a + '-' + data.b).attr("data-cell", "busy");
 				for (let i = 1; i < type; i++) {
-					$('#player-board #cell-' + data.a + '-' + (data.b+i)).removeAttr("data-cell");
-					$('#player-board #cell-' + (data.a+i) + '-' + data.b).attr("data-cell", "busy");
+					if ($('#player-board #cell-' + (data.a+i) + '-' + data.b).attr("data-cell") === "busy") {
+						isOK++;
+					}
 				}
-			} else {
-				console.log("OOB");
+
+				// Si le bateau ne dépasse pas le tableau
+				if (offset <= 10 && isOK === 0) {
+					// La nouvelle direction est verticale
+					let newDirection = oldDirection === "0" ? "1" : "0";
+					target.removeClass("p-boat-" + type + "-" + oldDirection).addClass("p-boat-" + type + "-" + newDirection).attr("data-dir", newDirection);
+
+					$('#player-board #cell-' + data.a + '-' + data.b).attr("data-cell", "busy");
+					for (let i = 1; i < type; i++) {
+						$('#player-board #cell-' + data.a + '-' + (data.b+i)).removeAttr("data-cell");
+						$('#player-board #cell-' + (data.a+i) + '-' + data.b).attr("data-cell", "busy");
+					}
+				} else {
+					console.log("OOB");
+				}
 			}
 		}
 	});
@@ -624,6 +631,7 @@ function play() {
 		$('#player-wrapper').addClass("turn");
 		getInstructions("Player is playing");
 		playerTurn();
+		$( ".p-boat" ).draggable( "disable" );
 	});
 }
 

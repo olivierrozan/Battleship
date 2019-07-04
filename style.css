@@ -364,3 +364,14 @@ h2 {
     font-weight: bold;
     margin: 15px 0px 5px 0px;
 }
+
+.blink {
+	/*border-color: green;*/
+	animation: bblink 1s linear;
+}
+
+@keyframes bblink{
+	0%{ border-color: red; }
+	50%{ border-color: #007bff; }
+	100%{ border-color: #007bff; }
+}
