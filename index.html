@@ -6,6 +6,7 @@
 		<title>Battleship</title>
 		<meta charset="utf-8">
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" crossorigin="anonymous">
 		<link rel="stylesheet" href="style.css">
 	</head>
 	
@@ -16,26 +17,34 @@
 
 		<div class="container">
 			<section>
+				<div id="instructions"></div>
+
 				<div id="message">
 					<div class="btn-group btn-group-toggle difficulty" data-toggle="buttons">
-						<label class="btn btn-primary active">
-							<input type="radio" name="skill" id="skill-easy" data-skill="Easy" value="25" autocomplete="off" checked> Easy
+						<label class="btn btn-pink">
+							<input type="radio" name="skill" id="skill-easy" data-skill="Easy" value="25" autocomplete="off" checked> 
+							<i class="fas fa-baby-carriage"></i>
+							<span>Easy</span>
 						</label>
 
-						<label class="btn btn-primary">
-							<input type="radio" name="skill" id="skill-medium" data-skill="Medium" value="50" autocomplete="off"> Medium
+						<label class="btn btn-orange">
+							<input type="radio" name="skill" id="skill-medium" data-skill="Medium" value="50" autocomplete="off"> 
+							<i class="fas fa-minus-circle"></i>
+							<span>Medium</span>
 						</label>
 
-						<label class="btn btn-primary">
-							<input type="radio" name="skill" id="skill-hard" data-skill="Hard" value="75" autocomplete="off"> Hard
+						<label class="btn btn-red">
+							<input type="radio" name="skill" id="skill-hard" data-skill="Hard" value="75" autocomplete="off"> 
+							<i class="fas fa-skull"></i>
+							<span>Hard</span>
 						</label>
 
-						<button type="button" class="skill-go" disabled>Start</button>
+						<button type="button" class="skill-go btn btn-primary" disabled>Start</button>
 					</div>
 					
 					<div id="message-win">
 						<span></span>
-						<button id="reset-game">Reset</button>
+						<button id="reset-game" class="btn btn-sm btn-danger"><i class="fas fa-redo-alt"></i>Reset</button>
 					</div>
 				</div>
 
@@ -75,6 +84,7 @@
 		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/js/all.min.js" crossorigin="anonymous"></script>
 		<script src="script.js"></script>
 	</body>
 

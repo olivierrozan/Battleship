@@ -102,6 +102,7 @@ function initGame() {
 	PlayerBoats = [];
 	$('#player-wrapper').removeClass("turn");
 	$('#cpu-wrapper').addClass("turn");
+	getInstructions("Choose a difficulty and place your boats (double click to change boat orientation)");
 	$('#message-win').hide();
 	$('.difficulty').show();
 	$('.difficulty input:checked').prop("checked", false);
@@ -168,6 +169,15 @@ function hitABoat(_Boats, x, y, target, player, _gameRules, boardElement, boardW
 }
 
 /**
+ * getInstructions Writes instructions
+ * @author orozan
+ * @params text string Instruction to display
+ */
+function getInstructions(text) {
+	$('#instructions').text(text);
+}
+
+/**
  * play When you click on a cell
  * @author orozan
  */
@@ -185,6 +195,7 @@ function playerTurn() {
 					gameRules.playerTurn = "CPU";
 					$('#player-wrapper').removeClass("turn");
 					$('#cpu-wrapper').addClass("turn");
+					getInstructions("CPU is playing");
 					setTimeout(CPUTurn, TIMER);
 				}
 
@@ -251,6 +262,7 @@ function CPUMissesABoat() {
 	console.log("**PLAYER**");
 	$('#cpu-wrapper').removeClass("turn");
 	$('#player-wrapper').addClass("turn");
+	getInstructions("Player is playing");
 }
 
 /**
@@ -287,6 +299,7 @@ function gameOver(check, fail = null) {
 		gameRules.playerTurn = "END";
 		$('#player-wrapper').addClass("turn");
 		$('#cpu-wrapper').addClass("turn");
+		getInstructions("Game Over");
 		console.log("GAME OVER");
 
 		for (let i = 0; i < 10; i++) {
@@ -523,19 +536,11 @@ function initPlayerPosition() {
 	}
 }
 
-/*=====  Document init  ======*/
-
-$(document).ready(() => {
-	initTable("player-board");
-	initTable("cpu-board");
-	initGame();
-
-	for (let i = 5; i >= 2; i--) {
-		placePlayerBoats(i);
-	}
-
-	drag_drop();
-
+/**
+ * switchBoatPosition Switches horizontal / vertical boat position on double click
+ * @author orozan
+ */
+function switchBoatPosition() {
 	$('.p-boat').on("dblclick", (e) => {
 		let target = $(e.target);
 		let type = target.attr('data-boat');
@@ -595,11 +600,13 @@ $(document).ready(() => {
 			}
 		}
 	});
+}
 
-	$('.difficulty label').on("click", function() {
-		$('.skill-go').removeAttr("disabled");
-	});
-
+/**
+ * play Allows player to play after moving boats and choosing a difficulty
+ * @author orozan
+ */
+function play() {
 	$('.skill-go').on("click", function() {
 		initPlayerPosition();
 		initCPUPosition();
@@ -615,8 +622,30 @@ $(document).ready(() => {
 		gameRules.difficulty = +$('.difficulty input:checked').val();
 		$('#cpu-wrapper').removeClass("turn");
 		$('#player-wrapper').addClass("turn");
+		getInstructions("Player is playing");
 		playerTurn();
 	});
+}
+
+/*=====  Document init  ======*/
+
+$(document).ready(() => {
+	initTable("player-board");
+	initTable("cpu-board");
+	initGame();
+
+	for (let i = 5; i >= 2; i--) {
+		placePlayerBoats(i);
+	}
+
+	drag_drop();
+	switchBoatPosition();
+
+	$('.difficulty label').on("click", function() {
+		$('.skill-go').removeAttr("disabled");
+	});
+
+	play();
 
 	$('#reset-game').on("click", function() {
 		initGame();

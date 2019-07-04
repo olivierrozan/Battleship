@@ -155,13 +155,58 @@ h2 {
 .difficulty label {
 	padding: 10px;
 	margin: 10px 15px 0px 0px;
-	background: #fff;
 	border-radius: 3px;
 	display: inline-block;
-	color: #007bff;
+	color: #fff;
 	cursor: pointer;
-	border: 2px solid #007bff;
 	font-weight: bold;
+}
+
+.difficulty label svg {
+	position: relative;
+	right: 10px;
+}
+
+.btn-pink {
+	background-color: #e83e8c !important;
+	border: 2px solid #e83e8c;
+}
+
+.btn-orange {
+	background-color: #d39e00 !important;
+	border: 2px solid #d39e00;
+}
+
+.btn-red {
+	background-color: #dc3545 !important;
+	border: 2px solid #dc3545;
+}
+
+.btn-pink.active {
+	background-color: #CC005D !important;
+	border: 2px solid #CC005D;
+}
+
+.btn-orange.active {
+	background-color: #826200 !important;
+	border: 2px solid #826200;
+}
+
+.btn-red.active {
+	background-color: #950412 !important;
+	border: 2px solid #950412;
+}
+
+.difficulty label.btn-primary:hover {
+	background-color: #e83e8c !important;
+}
+
+.difficulty label.btn-warning:hover {
+	background-color: #e0a800 !important;
+}
+
+.difficulty label.btn-danger:hover {
+	background-color: #c82333 !important;
 }
 
 .difficulty>span {
@@ -175,7 +220,6 @@ h2 {
 	color: #fff;
 	border-radius: 3px;
 	display: inline-block;
-	background-color: #007bff;
 	cursor: pointer;
 	border: 2px solid #007bff;
 }
@@ -218,20 +262,8 @@ h2 {
 	color: #dc3545;
 }
 
-#reset-game {
-	font-size: 0.6em;
-    border: 2px solid #dc3545;
-    border-radius: 4px;
-    padding: 5px;
-    color: #dc3545;
-    margin-left: 15px;
-    background-color: #fff;
-}
-
-#reset-game:hover {
-	cursor: pointer;
-	background-color: #dc3545;
-	color: #fff;
+#reset-game svg {
+	margin-right: 5px;
 }
 
 .coordY {
@@ -325,4 +357,10 @@ h2 {
 .p-boat-2-1 {
 	width: 2em;
 	height: 4em;
+}
+
+#instructions {
+	font-size: 1.3em;
+    font-weight: bold;
+    margin: 15px 0px 5px 0px;
 }
