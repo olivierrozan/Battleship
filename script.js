@@ -112,7 +112,8 @@ function initGame() {
 	$('#skill-message').empty().removeClass().hide();
 	$('td').removeAttr("class").attr("data-yet", "0");
 	$('.fb').removeClass('f-sunk-boat');
-	$( ".p-boat" ).draggable( "enable" );
+	$( ".p-boat" ).draggable("enable");
+	$('#respawn').show();
 }
 
 /**
@@ -632,22 +633,51 @@ function play() {
 		getInstructions("Player is playing");
 		playerTurn();
 		$( ".p-boat" ).draggable( "disable" );
+		$('#respawn').hide();
 	});
 }
 
-/*=====  Document init  ======*/
+/**
+ * cleanPlayerBoard Reinits the player board to move boats randomly
+ * @author orozan
+ */
+function cleanPlayerBoard() {
+	$('#player-board td').removeAttr("data-cell");
+	$('.cell-r').empty();
+}
 
-$(document).ready(() => {
-	initTable("player-board");
-	initTable("cpu-board");
-	initGame();
-
+/**
+ * draggableBoats Places draggable boats + inits drag n drop + direction flipping
+ * @author orozan
+ */
+function draggableBoats() {
 	for (let i = 5; i >= 2; i--) {
 		placePlayerBoats(i);
 	}
 
 	drag_drop();
 	switchBoatPosition();
+}
+
+/**
+ * respawnDraggableBoats Moves the draggable boats randomly
+ * @author orozan
+ */
+function respawnDraggableBoats() {
+	cleanPlayerBoard();
+	draggableBoats();
+}
+
+/*=====  Document init  ======*/
+$(document).ready(() => {
+	initTable("player-board");
+	initTable("cpu-board");
+	initGame();
+	draggableBoats();
+
+	$('#respawn').on("click", () => {
+		respawnDraggableBoats();
+	});
 
 	$('.difficulty label').on("click", function() {
 		$('.skill-go').removeAttr("disabled");
@@ -656,6 +686,7 @@ $(document).ready(() => {
 	play();
 
 	$('#reset-game').on("click", function() {
+		respawnDraggableBoats();
 		initGame();
 	});
 });

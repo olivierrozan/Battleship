@@ -366,7 +366,6 @@ h2 {
 }
 
 .blink {
-	/*border-color: green;*/
 	animation: bblink 1s linear;
 }
 
@@ -374,4 +373,8 @@ h2 {
 	0%{ border-color: red; }
 	50%{ border-color: #007bff; }
 	100%{ border-color: #007bff; }
+}
+
+#respawn svg {
+	margin-right: 7px;
 }
